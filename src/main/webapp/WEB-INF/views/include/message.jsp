@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<c:set var="ctp" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,9 +12,11 @@
 	<script>
 		'use strict';
 		
-		if('${message}' != '') alert('${message}');
-		<%-- location.href='<%=request.getContextPath()%>/study/0806/t10_member.jsp'; --%>
-		location.href='${url}';
+		let url = '';
+		if('${message}' != "") alert('${message}');
+
+		if('${mid}' != "") url = '${ctp}/${url}?mid=${mid}';
+		else location.href='${ctp}/${url}';
 	</script>
 </head>
 <body>

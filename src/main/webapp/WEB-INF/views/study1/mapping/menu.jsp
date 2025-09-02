@@ -8,6 +8,25 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<jsp:include page="/WEB-INF/views/include/bs5.jsp" />
 	<title>menu.jsp</title>
+	<script>
+		'use strict';
+		
+		function postCheck(flag) {
+			if(flag == '1') myform.action = '${ctp}/study1/mapping/test31';
+			else if(flag == '2') myform.action = '${ctp}/study1/mapping/test32';
+			else if(flag == '3') myform.action = '${ctp}/study1/mapping/test33';
+			else if(flag == '4') myform.action = '${ctp}/study1/mapping/test34';
+			
+			myform.submit();
+		}
+	
+	</script>
+	<style>
+		th {
+			text-align : center;
+			background-color : #ddd !important;
+		}
+	</style>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
@@ -41,6 +60,45 @@
 		<a href="2468/_____/test24/ohn1234" class="btn btn-info">test24</a>
 		<a href="test25/atom1234/2580/아톰/남자/13" class="btn btn-dark">test25</a>
 	</p>
+	<hr style="border-width:10px">
+	<p><b>Post방식</b></p>
+	<form name="myform" method="post">
+		<table class="table table-bordered">
+		 <tr>
+   	    <th>아이디</th>
+   	    <td><input type="text" name="mid" id="mid" value="admin" class="form-control"/></td>
+   	  </tr>
+   	  <tr>
+   	    <th>비밀번호</th>
+   	    <td><input type="password" name="pwd" id="pwd" value="1234" class="form-control"/></td>
+   	  </tr>
+   	  <tr>
+   	    <th>성명</th>
+   	    <td><input type="text" name="name" id="name" value="관리자" class="form-control"/></td>
+   	  </tr>
+   	  <tr>
+   	    <th>별명</th>
+   	    <td><input type="text" name="nickName" id="nickName" value="관리맨" class="form-control"/></td>
+   	  </tr>
+   	  <tr>
+   	    <th>나이</th>
+   	    <td><input type="number" name="age" id="age" value="22" class="form-control"/></td>
+   	  </tr>
+   	  <tr>
+   	    <th>성별</th>
+   	    <td>
+   	      <input type="radio" name="strGender" id="gender1" class="mr-1" value="남자"/>남자 &nbsp;
+   	      <input type="radio" name="strGender" id="gender2" class="mr-1" value="여자" checked />여자
+   	    </td>
+   	  </tr>
+		</table>
+		<p>
+			<input type="button" value="post1" onclick="postCheck(1)" class="btn btn-success" />
+			<input type="button" value="post2" onclick="postCheck(2)" class="btn btn-primary" />
+			<input type="button" value="post3(메세지1)" onclick="postCheck(3)" class="btn btn-warning" />
+			<input type="button" value="post4(메세지2)" onclick="postCheck(4)" class="btn btn-warning" />
+		</p>
+	</form>
 </div>
 <p><br/></p>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />

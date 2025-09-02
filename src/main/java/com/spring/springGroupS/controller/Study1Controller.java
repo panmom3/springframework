@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -165,11 +166,76 @@ public class Study1Controller {
 		return "/study1/mapping/test24";
 	}
 	
-//Path Variable방식으로의 값전달연습
+	//Path Variable방식으로의 값전달연습
 	@GetMapping("/mapping/test25/{mid}/{pwd}/{name}/{gender}/{age}")
 	private String test25Get(Model model, HoewonVO vo) {
 		model.addAttribute("vo",vo);
 		
 		return "/study1/mapping/test25";
+	}
+	
+	/* ---------------------------------------------------------------- */
+	// Post방식에 의한 값의 전달
+	//@GetMapping("/mapping/test31")
+	//@RequestMapping(value = "/mapping/test31", method = RequestMethod.POST)
+	@PostMapping("/mapping/test31")
+	private String test31Post(Model model, HoewonVO vo,
+		String mid,
+		String pwd,
+		String name,
+		String strGender,
+		int age,
+		String nickName
+		) {
+		
+		vo.setMid(mid);
+		vo.setPwd(pwd);
+		vo.setName(name);
+		vo.setGender(strGender);
+		vo.setAge(age);
+		vo.setNickName(nickName);
+		
+		model.addAttribute("vo",vo);
+		return "/study1/mapping/test31";
+	}
+	
+	@PostMapping("/mapping/test32")
+	private String test32Post(Model model, HoewonVO vo) {
+		
+		model.addAttribute("vo",vo);
+		return "/study1/mapping/test32";
+	}
+	
+	@GetMapping("/mapping/test33")
+	private String test33Get(Model model, String mid) {
+		// 아이디로 DB에서 회원정보를 가져와서 VO에 담아서 jsp로 넘겨준다.
+		//model.addAttribute("vo",vo);
+		model.addAttribute("mid", mid);
+		return "/study1/mapping/test33";
+	}
+	@PostMapping("/mapping/test33")
+	private String test33Post(Model model, HoewonVO vo) {
+		// DB에 회원정보를 저장시킨다.(회원가입처리)
+		
+		// 회원 가입 후 메세지 처리한다.
+		model.addAttribute("message", vo.getMid() + "님 회원 가입 되었습니다.");
+		model.addAttribute("url","/study1/mapping/test33?mid="+vo.getMid());
+//		model.addAttribute("url","/study1/mapping/test33?mid=");
+//		model.addAttribute("mid",vo.getMid());
+		return "include/message";
+	}
+	
+	@GetMapping("/mapping/test34")
+	private String test34Get(Model model, HoewonVO vo) {
+		model.addAttribute("vo",vo);
+		return "/study1/mapping/test34";
+	}
+	@PostMapping("/mapping/test34")
+	private String test34Post(Model model, HoewonVO vo) {
+		model.addAttribute("message","회원 가입 되었습니다.");
+		model.addAttribute("url","/study1/mapping/test34");
+		
+		model.addAttribute("vo",vo);
+		return "include/message";
 	}
 }
