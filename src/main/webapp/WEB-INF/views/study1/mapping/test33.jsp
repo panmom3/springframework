@@ -16,7 +16,7 @@
 <div class="container">
 	<h2>이곳은 테스트33번입니다</h2>
 	<hr/>
-	<div>아이디 : ${mid}</div>
+	<div>아이디 : ${vo.mid}</div>
 	<div>비밀번호 : ${vo.pwd}</div>
 	<div>성명 : ${vo.name}</div>
 	<div>별명 : ${vo.nickName}</div>

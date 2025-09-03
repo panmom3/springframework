@@ -16,6 +16,7 @@
 			else if(flag == '2') myform.action = '${ctp}/study1/mapping/test32';
 			else if(flag == '3') myform.action = '${ctp}/study1/mapping/test33';
 			else if(flag == '4') myform.action = '${ctp}/study1/mapping/test34';
+			else if(flag == '5') myform.action = '${ctp}/study1/mapping/test35';
 			
 			myform.submit();
 		}
@@ -87,16 +88,17 @@
    	  <tr>
    	    <th>성별</th>
    	    <td>
-   	      <input type="radio" name="strGender" id="gender1" class="mr-1" value="남자"/>남자 &nbsp;
-   	      <input type="radio" name="strGender" id="gender2" class="mr-1" value="여자" checked />여자
+   	      <input type="radio" name="strGender" id="gender1" class="me-1" value="남자"/>남자 &nbsp;
+   	      <input type="radio" name="strGender" id="gender2" class="me-1" value="여자" checked />여자
    	    </td>
    	  </tr>
 		</table>
 		<p>
-			<input type="button" value="post1" onclick="postCheck(1)" class="btn btn-success" />
-			<input type="button" value="post2" onclick="postCheck(2)" class="btn btn-primary" />
-			<input type="button" value="post3(메세지1)" onclick="postCheck(3)" class="btn btn-warning" />
-			<input type="button" value="post4(메세지2)" onclick="postCheck(4)" class="btn btn-warning" />
+			<input type="button" value="post31" onclick="postCheck(1)" class="btn btn-success" />
+			<input type="button" value="post32" onclick="postCheck(2)" class="btn btn-primary" />
+			<input type="button" value="post33(메세지1)" onclick="postCheck(3)" class="btn btn-warning" />
+			<input type="button" value="post34(메세지2)" onclick="postCheck(4)" class="btn btn-warning" />
+			<input type="button" value="post35(메세지3)" onclick="postCheck(5)" class="btn btn-warning" />
 		</p>
 	</form>
 </div>

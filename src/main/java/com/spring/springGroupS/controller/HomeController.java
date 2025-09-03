@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+//@Slf4j
 @Controller
 public class HomeController {
 	
@@ -26,17 +26,17 @@ public class HomeController {
 	public String home(Locale locale, Model model) {
 		// trace --- < debug < error < warning < information
 		logger.info("info:Welcome home! The client locale is {}.", locale);
-		logger.warn("warn:Welcome home! The client locale is {}.", locale);
-		logger.error("error:Welcome home! The client locale is {}.", locale);
-		logger.debug("debug:Welcome home! The client locale is {}.", locale);
-		System.out.println("===============================================");
+//		logger.warn("warn:Welcome home! The client locale is {}.", locale);
+//		logger.error("error:Welcome home! The client locale is {}.", locale);
+//		logger.debug("debug:Welcome home! The client locale is {}.", locale);
+//		System.out.println("===============================================");
 		
 		// lombok에서 제공하는 slf4j라이브러리 사용
-		log.info("lombok의 infor");
-		log.warn("lombok의 warn");
-		log.error("lombok의 error");
-		log.debug("lombok의 debug");
-		log.trace("lombok의 trace");
+//		log.info("lombok의 infor");
+//		log.warn("lombok의 warn");
+//		log.error("lombok의 error");
+//		log.debug("lombok의 debug");
+//		log.trace("lombok의 trace");
 
 		
 		Date date = new Date();
