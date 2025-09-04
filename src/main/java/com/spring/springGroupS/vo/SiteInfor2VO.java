@@ -1,9 +1,9 @@
 package com.spring.springGroupS.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+//@AllArgsConstructor
 public class SiteInfor2VO {
 	private String driver;
 	private String url;

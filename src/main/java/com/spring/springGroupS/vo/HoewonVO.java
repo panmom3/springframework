@@ -6,8 +6,8 @@ import lombok.Data;
 //@Setter
 //@ToString
 @Data
-//@AllArgsConstructor(클래스의 모든 필드를 파라미터로 받는 생성자를 자동으로 생성)
-//@NoArgsConstructor(기본생성자)
+//@AllArgsConstructor
+//@NoArgsConstructor
 //@Builder
 public class HoewonVO {
 	private String mid;
@@ -16,6 +16,6 @@ public class HoewonVO {
 	private String gender;
 	private int age;
 	
-	private String nickName;
-	private String strGender;
+	private String nickName;	
+	private String strGender;	
 }
