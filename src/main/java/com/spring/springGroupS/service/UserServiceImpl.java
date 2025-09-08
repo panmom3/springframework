@@ -21,9 +21,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserVO getUserSearch(String mid) {
-		// TODO Auto-generated method stub
 		return userDAO.getUserSearch(mid);
 	}
 
-
+	
+	
 }

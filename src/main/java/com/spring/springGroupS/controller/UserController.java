@@ -22,17 +22,19 @@ public class UserController {
 	public String userListGet(Model model) {
 		List<UserVO> vos = userService.getUserList();
 		
-		model.addAttribute(vos);
+		model.addAttribute("vos", vos);
 		
 		return "user/userList";
 	}
 	
 	@GetMapping("/userSearch")
 	public String userSearchGet(Model model, String mid) {
-		mid = "hkd1234";
+		//mid = "hkd1234";
 		UserVO vo = userService.getUserSearch(mid);
-
-		System.out.println(vo);
+		
+		System.out.println("vo : " + vo);
+		
 		return "";
 	}
+	
 }
