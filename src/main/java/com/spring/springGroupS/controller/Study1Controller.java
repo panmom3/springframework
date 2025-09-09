@@ -1,13 +1,19 @@
 package com.spring.springGroupS.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,14 +21,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.springGroupS.common.ARIAUtil;
+import com.spring.springGroupS.common.SecurityUtil;
 import com.spring.springGroupS.service.Study1Service;
+import com.spring.springGroupS.service.StudyService;
 import com.spring.springGroupS.vo.BmiVO;
 import com.spring.springGroupS.vo.HoewonVO;
 import com.spring.springGroupS.vo.SiteInfor2VO;
 import com.spring.springGroupS.vo.SiteInforVO;
 import com.spring.springGroupS.vo.SungjukVO;
+import com.spring.springGroupS.vo.UserVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +44,12 @@ public class Study1Controller {
 	
 	@Autowired
 	Study1Service study1Service;
+	
+	@Autowired
+	StudyService studyService;
+	
+	@Autowired
+	BCryptPasswordEncoder passwordEncoder;
 	
 	// QueryString 방식을 통한 값의 전달
 	
@@ -428,6 +445,152 @@ public class Study1Controller {
 		return "study1/xml/xmlTest5";
 	}
 	
+	// restApi 폼보기
+	@GetMapping("/restApi/restApiForm")
+	public String restApiFormGet() {
+		return "study1/restApi/restApiForm";
+	}
 	
+	// REST API를 통한 일반 메세지 처리1(X)
+	@GetMapping("/restApi/test1/{message}")
+	public String restApiTest1Get(@PathVariable String message) {
+		System.out.println("message : " + message);
+		return "message : " + message;
+	}
 	
+	// REST API를 통한 일반 메세지 처리2(O)
+	@ResponseBody
+	@GetMapping("/restApi/test2/{message}")
+	public String restApiTest2Get(@PathVariable String message) {
+		System.out.println("message : " + message);
+		return "message : " + message;
+	}
+	
+	// AJax 폼보기
+	@GetMapping("/ajax/ajaxForm")
+	public String ajaxFormGet() {
+		return "study1/ajax/ajaxForm";
+	}
+	
+	// 일반 값 처리
+	@ResponseBody
+	@GetMapping("/ajax/ajaxTest1")
+	public String ajaxTest1Get(int item) {
+		return "item = " + item;
+	}
+	
+	// AJax 숫자값 처리
+	@ResponseBody
+	@PostMapping("/ajax/ajaxTest2")
+	public int ajaxTest2Get(int item) {
+		return item;
+	}
+	
+	// AJax 문자값 처리
+	@ResponseBody
+	@PostMapping("/ajax/ajaxTest3")
+	public String ajaxTest3Post(String item) {
+		return "item = " + item;
+	}
+	
+	// AJax 객체 전송 폼보기
+	@GetMapping("/ajax/ajaxObjectForm")
+	public String ajaxObjectFormGet() {
+		return "study1/ajax/ajaxObjectForm";
+	}
+	
+	// ajax처리결과를 배열(String배열)로 전송...
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject1")
+	public String[] ajaxObject1Post(String dodo) {
+//		String[] strArray = new String[100];
+//		strArray = studyService.getCityStringArray(dodo);
+//		return strArray;
+		return studyService.getCityStringArray(dodo);
+	}
+	
+	// ajax처리결과를 객체배열(ArrayList<String>)로 전송...
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject2")
+	public ArrayList<String> ajaxObject2Post(String dodo) {
+		return studyService.getCityArrayList(dodo);
+	}
+	
+	// ajax처리결과를 객체배열(Map<Object, Object>)로 전송...
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject3")
+	public Map<Object, Object> ajaxObject3Post(String dodo) {
+		ArrayList<String> vos = studyService.getCityArrayList(dodo);
+		
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		map.put("city", vos);
+		return map;
+	}
+	
+	// 객체배열(arrayList)로 전송...
+	@PostMapping("/ajax/ajaxObject4")
+	public String ajaxObject4Post(Model model, String mid) {
+		ArrayList<UserVO> vos = studyService.getUserList(mid);
+		model.addAttribute("vos", vos);
+		
+		return "study1/ajax/ajaxObjectForm";
+	}
+	// VO객체로 전송...
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject5")
+	public UserVO ajaxObject5Post(String mid) {
+		return studyService.getUserMidSearch(mid);
+	} 
+	
+	//VOS객체로 전송...(완전일치)
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject6")
+	public ArrayList<UserVO> ajaxObject6Post(String mid) {
+		return studyService.getUserList(mid);
+	} 
+	
+	//VOS객체로 전송...(부분일치)
+	@ResponseBody
+	@PostMapping("/ajax/ajaxObject7")
+	public ArrayList<UserVO> ajaxObject7Post(String mid) {
+		return studyService.getUserListSearch(mid);
+	} 
+	
+	// 암화화 연습 폼보기
+	@GetMapping("/password/passwordForm")
+	public String passwordFormGet() {
+		return "study1/password/passwordForm";
+	}
+	
+	// sha256암호화(ajax처리)
+	@ResponseBody
+	@PostMapping(value="/password/sha256", produces="application/text; charset=utf8")
+	public String sha256Post(String pwd) {
+		String salt = UUID.randomUUID().toString().substring(0, 8);
+		SecurityUtil security = new SecurityUtil();
+		String encPwd = security.encryptSHA256(salt + pwd);
+		pwd = "salt : " + salt + " / 암호화된 비밀번호 : " + encPwd;
+		return pwd;
+	} 
+	// aria암호화(ajax처리)
+	@ResponseBody
+	@PostMapping(value="/password/aria", produces="application/text; charset=utf8")
+	public String ariaPost(String pwd) throws InvalidKeyException, UnsupportedEncodingException {
+		String salt = UUID.randomUUID().toString().substring(0, 8);
+		
+		String encPwd = ARIAUtil.ariaEncrypt(salt + pwd);
+		String decPwd = ARIAUtil.ariaDecrypt(encPwd);
+		
+		pwd = "salt : " + salt + " / 암호화된 비밀번호 : " + encPwd + " / 복호화비번 : " + decPwd.substring(8);
+		return pwd;
+	} 
+	//BCryptPasswordEncoder암호화(ajax처리)
+	@ResponseBody
+	@PostMapping(value="/password/bCryptPassword", produces="application/text; charset=utf8")
+	public String bCryptPasswordPost(String pwd) throws InvalidKeyException, UnsupportedEncodingException {
+		String encPwd = passwordEncoder.encode(pwd);
+				
+		pwd = "암호화된 비밀번호 : " + encPwd;
+		return pwd;
+	} 
 }
