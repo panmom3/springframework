@@ -8,11 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,14 +27,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.springGroupS.common.ARIAUtil;
 import com.spring.springGroupS.common.SecurityUtil;
+import com.spring.springGroupS.service.AddressService;
 import com.spring.springGroupS.service.Study1Service;
 import com.spring.springGroupS.service.StudyService;
 import com.spring.springGroupS.vo.BmiVO;
 import com.spring.springGroupS.vo.HoewonVO;
+import com.spring.springGroupS.vo.MailVO;
+import com.spring.springGroupS.vo.MemberVO;
 import com.spring.springGroupS.vo.SiteInfor2VO;
 import com.spring.springGroupS.vo.SiteInforVO;
 import com.spring.springGroupS.vo.SungjukVO;
@@ -50,6 +59,12 @@ public class Study1Controller {
 	
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	JavaMailSender mailSender;
+	
+	@Autowired
+  AddressService addressService;
 	
 	// QueryString 방식을 통한 값의 전달
 	
@@ -535,28 +550,29 @@ public class Study1Controller {
 		
 		return "study1/ajax/ajaxObjectForm";
 	}
-	// VO객체로 전송...
+	
+	// vo객체로 전송...
 	@ResponseBody
 	@PostMapping("/ajax/ajaxObject5")
 	public UserVO ajaxObject5Post(String mid) {
 		return studyService.getUserMidSearch(mid);
-	} 
+	}
 	
-	//VOS객체로 전송...(완전일치)
+	// vos객체로 전송...(완전일치)
 	@ResponseBody
 	@PostMapping("/ajax/ajaxObject6")
 	public ArrayList<UserVO> ajaxObject6Post(String mid) {
 		return studyService.getUserList(mid);
-	} 
+	}
 	
-	//VOS객체로 전송...(부분일치)
+	// vos객체로 전송...(부분일치)
 	@ResponseBody
 	@PostMapping("/ajax/ajaxObject7")
 	public ArrayList<UserVO> ajaxObject7Post(String mid) {
 		return studyService.getUserListSearch(mid);
-	} 
+	}
 	
-	// 암화화 연습 폼보기
+	// 암호화 연습 폼
 	@GetMapping("/password/passwordForm")
 	public String passwordFormGet() {
 		return "study1/password/passwordForm";
@@ -571,7 +587,8 @@ public class Study1Controller {
 		String encPwd = security.encryptSHA256(salt + pwd);
 		pwd = "salt : " + salt + " / 암호화된 비밀번호 : " + encPwd;
 		return pwd;
-	} 
+	}
+	
 	// aria암호화(ajax처리)
 	@ResponseBody
 	@PostMapping(value="/password/aria", produces="application/text; charset=utf8")
@@ -583,14 +600,76 @@ public class Study1Controller {
 		
 		pwd = "salt : " + salt + " / 암호화된 비밀번호 : " + encPwd + " / 복호화비번 : " + decPwd.substring(8);
 		return pwd;
-	} 
-	//BCryptPasswordEncoder암호화(ajax처리)
+	}
+	
+	// BCryptPasswordEncoder암호화(ajax처리)
 	@ResponseBody
 	@PostMapping(value="/password/bCryptPassword", produces="application/text; charset=utf8")
 	public String bCryptPasswordPost(String pwd) throws InvalidKeyException, UnsupportedEncodingException {
 		String encPwd = passwordEncoder.encode(pwd);
-				
+		
 		pwd = "암호화된 비밀번호 : " + encPwd;
 		return pwd;
-	} 
+	}
+	
+	// 메일 작성폼 보기
+	@GetMapping("/mail/mailForm")
+	public String mailFormGet(Model model) {
+		List<MemberVO> list = addressService.getAddressList();
+    model.addAttribute("mailForm", list);
+		return "study1/mail/mailForm";
+	}
+	//메일 보내기
+	@PostMapping("/mail/mailForm")
+	public String mailFormPost(MailVO vo, HttpServletRequest request) throws MessagingException {
+		String toMail = vo.getToMail();
+		String title = vo.getTitle();
+		String content = vo.getContent();
+		
+		// 메일 전송을 위한 객체 : MimeMessage()-전송, MimeMessageHelper()-보관함
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
+		
+		// 메세지보관함에 저장되는 'content'변수안에 발신자의 필요한 정보를 추가로 담아준다.
+		content = content.replace("\n", "<br>");
+		content += "<br><hr><h3>SpringGroup에서 보냅니다.</h3><br><hr>";
+		content += "<p><img src=\"cid:main.jpg\" width='500px'></p>";
+		content += "<p>방문하기 : <a href='http://49.142.157.251:9090/cjgreen'>springGroup</a></p>";
+		content += "<hr>";
+		
+		messageHelper.setTo(toMail);
+		messageHelper.setSubject(title);
+		messageHelper.setText(content, true);
+
+		//FileSystemResource file = new FileSystemResource("D:\\springGroup\\springframework\\works\\springGroupS\\src\\main\\webapp\\resources\\images\\main.jpg");
+		FileSystemResource file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/main.jpg"));
+		messageHelper.addInline("main.jpg", file);
+		
+		// 첨부파일 보내기
+		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/bio.jpg"));
+		messageHelper.addAttachment("bio.jpg", file);
+		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/7.jpg"));
+		messageHelper.addAttachment("7.jpg", file);
+		
+		// 메일 전송하기
+		mailSender.send(message);
+		
+		return "redirect:/message/mailSendOk";
+	}
+	
+	// 파일업로드 폼 보기
+	@GetMapping("/fileUpload/fileUploadForm")
+	public String fileUploadFormGet() {
+		return "study1/fileUpload/fileUploadForm";
+	}
+	// 1개 파일업로드 처리
+	@PostMapping("/fileUpload/fileUploadForm")
+	public String fileUploadFormPost(MultipartFile fName, String mid) {
+		int res = studyService.setFileUpload(fName, mid);
+		
+		if(res != 0) return "redirect:/message/fileUploadOk";
+		else return "redirect:/message/fileUploadNo";
+	}
+	
+
 }

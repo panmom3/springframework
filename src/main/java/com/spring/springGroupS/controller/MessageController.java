@@ -46,7 +46,7 @@ public class MessageController {
 			model.addAttribute("url", "/user2/userUpdate?idx="+idx);
 		}
 		else if(msgFlag.equals("userUpdateNo")) {
-			model.addAttribute("message", "회원 수정 실패");
+			model.addAttribute("message", "회원 수정 실패~~");
 			model.addAttribute("url", "/user2/userUpdate?idx="+idx);
 		}
 		else if(msgFlag.equals("guestInputOk")) {
@@ -62,7 +62,7 @@ public class MessageController {
 			model.addAttribute("url", "/guest/guestList");
 		}
 		else if(msgFlag.equals("adminNo")) {
-			model.addAttribute("message", "관리자 인증 실패");
+			model.addAttribute("message", "관리자 인증 실패~~");
 			model.addAttribute("url", "/guest/admin");
 		}
 		else if(msgFlag.equals("adminOut")) {
@@ -74,8 +74,20 @@ public class MessageController {
 			model.addAttribute("url", "/guest/guestList");
 		}
 		else if(msgFlag.equals("guestDeleteNo")) {
-			model.addAttribute("message", "방명록 게시글이 삭제실패되었습니다.");
+			model.addAttribute("message", "방명록 게시글이 삭제 실패되었습니다.");
 			model.addAttribute("url", "/guest/guestList");
+		}
+		else if(msgFlag.equals("mailSendOk")) {
+			model.addAttribute("message", "메일이 전송되었습니다.");
+			model.addAttribute("url", "/study1/mail/mailForm");
+		}
+		else if(msgFlag.equals("fileUploadOk")) {
+			model.addAttribute("message", "파일이 업로드 되었습니다.");
+			model.addAttribute("url", "/study1/fileUpload/fileUploadForm");
+		}
+		else if(msgFlag.equals("fileUploadNo")) {
+			model.addAttribute("message", "파일 업로드 실패~~");
+			model.addAttribute("url", "/study1/fileUpload/fileUploadForm");
 		}
 		
 		return "include/message";

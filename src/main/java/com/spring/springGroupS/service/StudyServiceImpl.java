@@ -1,9 +1,18 @@
 package com.spring.springGroupS.service;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.springGroupS.dao.StudyDAO;
 import com.spring.springGroupS.vo.UserVO;
@@ -139,4 +148,38 @@ public class StudyServiceImpl implements StudyService {
 		return studyDAO.getUserListSearch(mid);
 	}
 
+	@Override
+	public int setFileUpload(MultipartFile fName, String mid) {
+		int res = 0;
+		
+		// 파일명 중복처리
+		String oFileName = fName.getOriginalFilename(); //원본파일
+		String sFileName = mid + "_" + UUID.randomUUID().toString().substring(0,4) + "_" + oFileName;
+		
+		try {
+			writeFile(fName, sFileName);
+			res = 1;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
+	
+	//파일 서버에 업로드 시키는 메소드
+	private void writeFile(MultipartFile fName, String sFileName) throws IOException {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/fileUpload/");
+		
+		FileOutputStream fos = new FileOutputStream(realPath + sFileName);
+	
+		if(fName.getBytes().length != -1) {
+			fos.write(fName.getBytes());
+			fos.close();
+		}
+	
+	}
+
+	
+	
 }

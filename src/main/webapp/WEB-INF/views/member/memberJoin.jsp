@@ -9,6 +9,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>memberJoin.jsp</title>
   <jsp:include page="/WEB-INF/views/include/bs5.jsp" />
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="${ctp}/js/woo.js"></script>
   <script>
     'use strict';
     
@@ -16,7 +18,7 @@
     let nickCheckSw = 0;
     
   	// 정규식을 이용한 유효성검사처리.....
-  	let regMid = /^[a-zA-Z0-9_]{4,20}$/;	// 아이디는 4~20의 영문 대/소문자와 숫자와 밑줄 가능
+  	let regMid = /^[a-zA-Z0-9_]{4,20}$/;// 아이디는 4~20의 영문 대/소문자와 숫자와 밑줄 가능
     let regNickName = /^[가-힣0-9_]+$/;		// 닉네임은 한글, 숫자, 밑줄만 가능
     let regName = /^[가-힣a-zA-Z]+$/;			// 이름은 한글/영문 가능
     let regEmail =/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;
@@ -65,7 +67,7 @@
         return false;
       }
       else if(!regNickName.test(nickName)) {
-        alert("닉네임은 한글만 사용가능합니다.");
+    	  alert("닉네임은 '한글/숫자/_'만 사용가능합니다.");
         myform.nickName.focus();
         return false;
       }
@@ -151,26 +153,62 @@
     
     // 아이디 중복체크
     function idCheck() {
-    	let mid = myform.mid.value;
+    	let mid = myform.mid.value.trim();
     	
-    	if(mid.trim() == "") {
-    		alert("아이디를 입력하세요!");
+    	if(!regMid.test(mid)) {
+    		alert("아이디는 4~20자리의 영문 소/대문자와 숫자, 언더바(_)만 사용가능합니다.");
     		myform.mid.focus();
     		return false;
     	}
     	
+			$.ajax({
+				url  : "${ctp}/member/memberIdCheck",
+				type : "post",
+				data : {mid : mid},
+				success: (res) => {
+					if(res != '') {
+						alert("이미 사용중인 아이디 입니다. 다시 입력하세요.");
+						myform.mid.focus();
+					}
+					else {
+						alert("사용 가능한 아이디 입니다.");
+						document.getElementById("mid").disabled = true;
+						if(document.getElementById("pwd").value == '') document.getElementById("pwd").focus();
+		    		idCheckSw = 1;
+					}
+				},
+				error : () => alert("전송 오류!")
+			});
     }
     
     // 닉네임 중복체크
     function nickCheck() {
-    	let nickName = myform.nickName.value;
+    	let nickName = myform.nickName.value.trim();
     	
-    	if(nickName.trim() == "") {
-    		alert("닉네임을 입력하세요!");
-    		myform.nickName.focus();
-    		return false;
-    	}
+    	if(!regNickName.test(nickName)) {
+        alert("닉네임은 '한글/숫자/_'만 사용가능합니다.");
+        myform.nickName.focus();
+        return false;
+      }
     	
+    	$.ajax({
+				url  : "${ctp}/member/memberNickCheck",
+				type : "post",
+				data : {nickName : nickName},
+				success: (res) => {
+					if(res != '') {
+						alert("이미 사용중인 닉네임 입니다. 다시 입력하세요.");
+						myform.nickName.focus();
+					}
+					else {
+						alert("사용 가능한 닉네임 입니다.");
+						document.getElementById("nickName").disabled = true;
+						if(document.getElementById("name").value == '') document.getElementById("name").focus();
+						nickCheckSw = 1;
+					}
+				},
+				error : () =>	alert("전송 오류!")
+			});
     }
     
     
@@ -188,7 +226,7 @@
     // 이메일 인증번호 받기
     function emailCertification() {
     	let mid = myform.mid.value.trim();
-    	let pwd = myform.pwd.value;
+    	let pwd = myform.pwd.value.trim();
     	let nickName = myform.nickName.value;
     	let name = myform.name.value;
     	let email1 = myform.email1.value.trim();
@@ -200,13 +238,13 @@
     		myform.mid.focus();
     		return false;
     	}
-    	else if(pwd.trim() == "") {
-        alert("비밀번호는 1개이상의 문자와 특수문자 조합의 6~24 자리로 작성해주세요.");
+    	else if(pwd.length < 4 && pwd.length > 20) {
+        alert("비밀번호는 4~20 자리로 작성해주세요.");
         myform.pwd.focus();
         return false;
       }
       else if(!regNickName.test(nickName)) {
-        alert("닉네임은 한글만 사용가능합니다.");
+        alert("닉네임은 '한글/숫자/_'만 사용가능합니다.");
         myform.nickName.focus();
         return false;
       }
@@ -220,9 +258,53 @@
         myform.email1.focus();
         return false;
       }
-      
-    	
-    }
+    	// 인증번호를 메일로 전송하는동안 사용자 폼에는 스피너가 출력되도록 처리
+    	let spin = "<div class='text-center'><div class='spinner-border text-muted'></div> 메일 발송중입니다. 잠시만 기다려주세요 <div class='spinner-border text-muted'></div></div>";
+      $("#demoSpin").html(spin);
+      // ajax를 통해서 인증번호 발송하기
+    	$.ajax({
+			url  : "${ctp}/member/memberEmailCheck",
+			type : "post",
+			data : {email : email},
+			success: (res) => {
+				if(res == 1) {
+					alert("인증번호가 발송되었습니다.\n메일확인후 인증번호를 입력해 주세요");
+					let str = '<div class="input-group mb-3">';
+					str += '<input type="text" name="checkKey" id="checkKey" class="form-control"/>';
+					str += '<input type="button" value="인증번호확인" onclick="emailCertificationOk()" class="btn btn-info"/>';
+					str += '</div>';
+					$("#demoSpin").html(str);
+				} else {
+					alert("인증번호 확인버튼을 다시 눌러주세요");
+				}
+			},
+			error : () =>	alert("전송 오류!")
+		});
+	}
+    
+  // 인증번호 확인처리
+  function emailCertificationOk() {
+	  let checkKey = $("#checkKey").val();
+	  if(checkKey.trim() == "") {
+		  alert("메일로 전송받은 인증키를 입력해주세요");
+		  $("#checkKey").focus();
+		  return false;
+	  }
+	  $.ajax({
+			url  : "${ctp}/member/memberEmailCheckOk",
+			type : "post",
+			data : {checkKey : checkKey},
+			success: (res) => {
+				if(res == 1) {	
+					$("#demoSpin").hide();
+					$("#addContent").show();
+				} else {
+					alert("인증번호 오류~~메일을 통해서 발급받은 인증번호를 확인하세요.");
+				}
+			},
+			error : () =>	alert("전송 오류!")
+		});
+  }
     
   </script>
   <style>
@@ -237,27 +319,28 @@
   <form name="myform" method="post" class="was-validated">
     <h2 class="text-center">회 원 가 입</h2>
     <br/>
-    <div class="input-group mb-2">
+    <div class="input-group mb-3">
       <label for="mid" class="input-group-text bg-secondary-subtle border-secondary-subtle">아이디</label>
       <input type="text" class="form-control" name="mid" id="mid" placeholder="아이디를 입력하세요." autofocus required />
       <input type="button" value="아이디 중복체크" id="midBtn" class="btn btn-secondary btn-sm" onclick="idCheck()"/>
     </div>
-    <div class="input-group mb-2">
+    <div class="input-group mb-3">
       <label for="pwd" class="input-group-text bg-secondary-subtle border-secondary-subtle">비밀번호</label>
       <input type="password" name="pwd" id="pwd" class="form-control" placeholder="비밀번호를 입력하세요." required />
     </div>
-    <div class="input-group mb-2">
+    <div class="input-group mb-3">
       <label for="nickName" class="input-group-text bg-secondary-subtle border-secondary-subtle">닉네임</label>
       <input type="text" name="nickName" id="nickName" class="form-control" placeholder="별명을 입력하세요." required />
       <input type="button" id="nickNameBtn" value="닉네임 중복체크" class="btn btn-secondary btn-sm" onclick="nickCheck()"/>
     </div>
-    <div class="input-group mb-2">
+    <div class="input-group mb-3">
       <label for="name" class="input-group-text bg-secondary-subtle border-secondary-subtle">성 명</label>
       <input type="text" name="name" id="name" class="form-control" placeholder="성명을 입력하세요." required />
     </div>
-    <div class="input-group mb-2">
+    <div class="input-group mb-3">
       <label for="email1" class="input-group-text bg-secondary-subtle border-secondary-subtle">Email</label>
       <input type="text" name="email1" id="email1" class="form-control" placeholder="Email을 입력하세요." required style="width:150px" />
+      <div class="input-group-text border-white m-0 p-0">@</div>
       <select name="email2" class="form-select">
         <option value="naver.com" selected>naver.com</option>
         <option value="hanmail.net">hanmail.net</option>
@@ -266,12 +349,11 @@
         <option value="nate.com">nate.com</option>
         <option value="yahoo.com">yahoo.com</option>
       </select>
-      <input type="button" value="인증번호받기" onclick="emailCertification()" id="certificationBtn" class="btn btn-secondary btn-sm" />
-      <!-- <div id="demoSpin"></div> -->
+      <input type="button" value="인증번호받기" onclick="emailCertification()" id="certificationBtn" class="btn btn-success btn-sm" />
     </div>
-    <!-- <div id="addContent" style="display:none"> -->
-    <div id="addContent">
-	    <div class="input-group mb-2">
+    <div id="demoSpin" class="mb-3"></div>
+    <div id="addContent" style="display:none">
+	    <div class="input-group mb-3">
         <label class="input-group-text bg-secondary-subtle border-secondary-subtle">성 별</label>
         <div class="border form-control">
         <label class="form-check-label ms-3">
@@ -282,11 +364,11 @@
         </label>
         </div>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
 	      <label for="birthday" class="input-group-text bg-secondary-subtle border-secondary-subtle">생일</label>
 	      <input type="date" name="birthday" value="${today}" class="form-control"/>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
         <label class="input-group-text bg-secondary-subtle border-secondary-subtle">전화번호</label>
         <select name="tel1" class="form-select">
           <option value="010" selected>010</option>
@@ -313,7 +395,7 @@
 	      <div class="col-10">
 		      <div class="input-group mb-1">
 		        <input type="text" name="postcode" id="sample6_postcode" placeholder="우편번호" class="form-control">
-	          <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-secondary">
+	          <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-secondary btn-sm">
 		      </div>
 		      <div class="mb-1"><input type="text" name="roadAddress" id="sample6_address" size="50" placeholder="주소" class="form-control mb-1"></div>
 		      <div class="input-group mb-1">
@@ -322,11 +404,11 @@
 		      </div>
 	      </div>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
 	      <label for="homepage" class="input-group-text bg-secondary-subtle border-secondary-subtle">홈페이지</label>
 	      <input type="text" name="homePage" id="homePage" value="https://" class="form-control" placeholder="홈페이지 주소를 입력하세요." />
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
 	      <label for="name" class="input-group-text bg-secondary-subtle border-secondary-subtle">직업</label>
 	      <select class="form-control" id="job" name="job">
 	        <!-- <option value="">직업선택</option> -->
@@ -341,7 +423,7 @@
 	        <option selected>기타</option>
 	      </select>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
         <label class="input-group-text bg-secondary-subtle border-secondary-subtle">취미</label>
         <div class="border form-control">
 	        <input type="checkbox" class="form-check-input ms-2 me-1" value="등산" name="hobby"/>등산
@@ -354,11 +436,11 @@
 	        <input type="checkbox" class="form-check-input ms-2 me-1" value="기타" name="hobby" checked/>기타
         </div>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
 	      <label for="content" class="input-group-text bg-secondary-subtle border-secondary-subtle">자기소개</label>
 	      <textarea rows="5" class="form-control" id="content" name="content" placeholder="자기소개를 입력하세요."></textarea>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-3">
         <label class="input-group-text bg-secondary-subtle border-secondary-subtle">정보공개</label>
         <div class="border form-control">
 	        <label class="form-check-label ms-3">
@@ -369,11 +451,11 @@
 	        </label>
       	</div>
 	    </div>
-	    <div class="input-group mb-2">
+	    <div class="input-group mb-1">
 	      <div class="input-group-text bg-secondary-subtle border-secondary-subtle">회원 사진(파일용량:2MByte이내)</div>
 	      <input type="file" name="fName" id="file" onchange="imgCheck(this)" class="bg-secondary-subtle form-control"/>
 	    </div>
-      <div class="text-end"><img id="photoDemo" width="100px"/></div>
+      <div class="text-end m-0 p-0"><img id="photoDemo" width="100px"/></div>
       <div class="text-center">
 		    <button type="button" class="btn btn-success" onclick="fCheck()">회원가입</button> &nbsp;
 		    <button type="reset" class="btn btn-warning">다시작성</button> &nbsp;
