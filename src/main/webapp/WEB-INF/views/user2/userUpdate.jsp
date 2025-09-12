@@ -7,19 +7,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <jsp:include page="/WEB-INF/views/include/bs5.jsp" />
-  <title>userInput.jsp</title>
+  <title>userUpdate.jsp</title>
+  <style>
+    th {
+      background-color: #eee !important;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
-<div class="container text-center">
-  <h2>User 정보 수정하기</h2>
+<div class="container">
+  <h2 class="text-center m-3">User 정보 수정하기</h2>
   <form method="post">
   <table class="table table-bordered">
     <tr>
       <th>아이디</th>
-      <td><input type="text" name="mid" id="mid" value="${vo.mid}" class="form-control"  /></td>
+      <td><input type="text" name="mid" id="mid" value="${vo.mid}" class="form-control" readonly /></td>
     </tr>
     <tr>
       <th>성명</th>

@@ -21,7 +21,6 @@ public class User2ServiceImpl implements User2Service {
 
 	@Override
 	public List<UserVO> getUserSearch(String mid) {
-		
 		return user2DAO.getUserSearch(mid);
 	}
 
@@ -44,4 +43,6 @@ public class User2ServiceImpl implements User2Service {
 	public int setUserUpdate(UserVO vo) {
 		return user2DAO.setUserUpdate(vo);
 	}
+
+	
 }

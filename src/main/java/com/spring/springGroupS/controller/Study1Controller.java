@@ -32,7 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.springGroupS.common.ARIAUtil;
 import com.spring.springGroupS.common.SecurityUtil;
-import com.spring.springGroupS.service.AddressService;
 import com.spring.springGroupS.service.Study1Service;
 import com.spring.springGroupS.service.StudyService;
 import com.spring.springGroupS.vo.BmiVO;
@@ -62,9 +61,6 @@ public class Study1Controller {
 	
 	@Autowired
 	JavaMailSender mailSender;
-	
-	@Autowired
-  AddressService addressService;
 	
 	// QueryString 방식을 통한 값의 전달
 	
@@ -615,41 +611,43 @@ public class Study1Controller {
 	// 메일 작성폼 보기
 	@GetMapping("/mail/mailForm")
 	public String mailFormGet(Model model) {
-		List<MemberVO> list = addressService.getAddressList();
-    model.addAttribute("mailForm", list);
+		List<MemberVO> memberVos = studyService.getMemberList();
+		model.addAttribute("memberVos", memberVos);
+		model.addAttribute("memberCnt", memberVos.size());
+		
 		return "study1/mail/mailForm";
 	}
-	//메일 보내기
+	
+	// 메일 보내기
 	@PostMapping("/mail/mailForm")
 	public String mailFormPost(MailVO vo, HttpServletRequest request) throws MessagingException {
 		String toMail = vo.getToMail();
 		String title = vo.getTitle();
 		String content = vo.getContent();
 		
-		// 메일 전송을 위한 객체 : MimeMessage()-전송, MimeMessageHelper()-보관함
+		// 메일 전송을 위한 객체 : MimeMessage(), MimeMessageHelper()
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
 		
 		// 메세지보관함에 저장되는 'content'변수안에 발신자의 필요한 정보를 추가로 담아준다.
 		content = content.replace("\n", "<br>");
-		content += "<br><hr><h3>SpringGroup에서 보냅니다.</h3><br><hr>";
+		content += "<br><hr><h3>SpringGroup에서 보냅니다.</h3><hr><br>";
 		content += "<p><img src=\"cid:main.jpg\" width='500px'></p>";
 		content += "<p>방문하기 : <a href='http://49.142.157.251:9090/cjgreen'>springGroup</a></p>";
 		content += "<hr>";
-		
 		messageHelper.setTo(toMail);
 		messageHelper.setSubject(title);
 		messageHelper.setText(content, true);
-
-		//FileSystemResource file = new FileSystemResource("D:\\springGroup\\springframework\\works\\springGroupS\\src\\main\\webapp\\resources\\images\\main.jpg");
+		
+		// FileSystemResource file = new FileSystemResource("D:\\springGroup\\springframework\\works\\springGroupS\\src\\main\\webapp\\resources\\images\\main.jpg");
 		FileSystemResource file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/main.jpg"));
 		messageHelper.addInline("main.jpg", file);
 		
 		// 첨부파일 보내기
-		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/bio.jpg"));
-		messageHelper.addAttachment("bio.jpg", file);
-		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/7.jpg"));
-		messageHelper.addAttachment("7.jpg", file);
+		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/2.jpg"));
+		messageHelper.addAttachment("2.jpg", file);
+		file = new FileSystemResource(request.getSession().getServletContext().getRealPath("/resources/images/3.jpg"));
+		messageHelper.addAttachment("3.jpg", file);
 		
 		// 메일 전송하기
 		mailSender.send(message);
@@ -657,12 +655,13 @@ public class Study1Controller {
 		return "redirect:/message/mailSendOk";
 	}
 	
-	// 파일업로드 폼 보기
+	// 파일 업로드폼 보기
 	@GetMapping("/fileUpload/fileUploadForm")
 	public String fileUploadFormGet() {
 		return "study1/fileUpload/fileUploadForm";
 	}
-	// 1개 파일업로드 처리
+	
+	// 1개 파일 업로드 처리
 	@PostMapping("/fileUpload/fileUploadForm")
 	public String fileUploadFormPost(MultipartFile fName, String mid) {
 		int res = studyService.setFileUpload(fName, mid);
@@ -671,5 +670,4 @@ public class Study1Controller {
 		else return "redirect:/message/fileUploadNo";
 	}
 	
-
 }

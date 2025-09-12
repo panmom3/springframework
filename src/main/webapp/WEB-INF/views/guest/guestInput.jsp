@@ -10,7 +10,7 @@
   <title>guestInput.jsp</title>
 </head>
 <body>
-<jsp:include page="/WEB-INF/views/include/header.jsp" />
+<jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <p><br/></p>
 <div class="container">

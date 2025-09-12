@@ -31,12 +31,12 @@
           <div class="mb-2">
 	          <input type="submit" value="로그인" class="btn btn-success me-2"/>
 	          <input type="reset" value="다시입력" class="btn btn-warning me-2"/>
-	          <input type="button" value="회원가입" onclick="location.href='${ctp}/study2/login/LoginJoin';" class="btn btn-secondary"/>
+	          <input type="button" value="회원가입" onclick="location.href='${ctp}/member/memberJoin';" class="btn btn-secondary"/>
           </div>
 	    		<div style="font-size:0.8em">
 	    			<input type="checkbox" name="idSave" checked /> 아이디 저장 /
-	    			<a href="javascript:midSearch()" class="text-decoration-none text-dark link-primary">아이디찾기</a> /
-	    			<a href="javascript:pwdSearch()" class="text-decoration-none text-dark link-primary">비밀번호찾기</a>
+	    			<a href="memberIdSearch" class="text-decoration-none text-dark link-primary">아이디찾기</a> /
+	    			<a href="#" class="text-decoration-none text-dark link-primary">비밀번호찾기</a>
 	    		</div>
         </td>
       </tr>

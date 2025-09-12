@@ -15,7 +15,7 @@
     
     function guestDelete(idx) {
     	let ans = confirm("현재 게시글을 삭제하시겠습니까?");
-    	if(ans) location.href= "guestDelete?idx="+idx;
+    	if(ans) location.href = "guestDelete?idx="+idx;
     }
   </script>
   <style>
@@ -26,27 +26,27 @@
   </style>
 </head>
 <body>
-<jsp:include page="/WEB-INF/views/include/header.jsp" />
+<jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <p><br/></p>
 <div class="container">
   <h2 class="text-center">방명록 리스트</h2>
   <table class="table table-borderless m-0 p-0">
     <tr>
-      <td><a href="guestInput" class="btn btn-success btn-sm">글쓰기</a></td>
-      <td class="text-end">
+      <td>
+        <a href="guestInput" class="btn btn-success btn-sm">글쓰기</a>
         <c:if test="${sAdmin != 'adminOK'}"><a href="admin" class="btn btn-primary btn-sm">관리자</a></c:if>
-        <c:if test="${sAdmin == 'adminOK'}"><a href="adminOut" class="btn btn-primary btn-sm">관리자 로그아웃</a></c:if><br />
-      </td> 
+        <c:if test="${sAdmin == 'adminOK'}"><a href="adminOut" class="btn btn-primary btn-sm">관리자 로그아웃</a></c:if>
+      </td>
       <td class="text-end">
         <c:if test="${pag > 1}">
-       		<a href="guestList?pag=1" title="첫페이지">◁◁</a>
-        	<a href="guestList?pag=${pag-1}" title="이전페이지">◀</a>
+          <a href="guestList?pag=1" title="첫페이지" class="text-decoration-none text-dark link-primary">◁</a>
+          <a href="guestList?pag=${pag-1}" title="이전페이지" class="text-decoration-none text-dark link-primary">◀</a>
         </c:if>
         ${pag}/${totPage}
         <c:if test="${pag < totPage}">
-        	<a href="guestList?pag=${pag+1}" title="다음페이지">▶</a>
-        	<a href="guestList?pag=${totPage}" title="마지막페이지">▷▷</a>
+          <a href="guestList?pag=${pag+1}" title="다음페이지" class="text-decoration-none text-dark link-primary">▶</a>
+          <a href="guestList?pag=${totPage}" title="마지막페이지" class="text-decoration-none text-dark link-primary">▷</a>
         </c:if>
       </td>
     </tr>
@@ -93,21 +93,22 @@
 	    </tr>
 	  </table>
 	  <br/>
-	  <c:set var="curScrStartNo" value="${curScrStartNo - 1}"/>
+	  <c:set var="curScrStartNo" value="${curScrStartNo -  1}"/>
   </c:forEach>
   
 <!-- 블록페이지 시작 -->
 <div class="text-center">
-	<c:if test="${pag > 1}"><a href="guestList?pag=1" class="text-decoration-none link-primary">첫페이지</a></c:if>
-	<c:if test="${curBlock > 0}"><a href="guestList?pag=${(curBlock-1)*blockSize + 1}" class="text-decoration-none link-primary">이전블록</a></c:if>
-	<c:forEach var="i" begin="${(curBlock*blockSize)+1}" end="${(curBlock*blockSize)+blockSize}" varStatus="st">
-		<c:if test="${i <= totPage && i == pag}">[<a href="guestList?pag=${i}" class="text-decoration-none link-primary text-danger"><b>${i}</b></a>]</c:if>
-		<c:if test="${i <= totPage && i != pag}">[<a href="guestList?pag=${i}" class="text-decoration-none link-primary">${i}</a>]</c:if>
-	</c:forEach>
-	<c:if test="${curBlock < lastBlock}"><a href="guestList?pag=${(curBlock+1)*blockSize + 1}" class="text-decoration-none link-primary">다음블록</a></c:if>
-	<c:if test="${pag < totPage}"><a href="guestList?pag=${totPage}" class="text-decoration-none link-primary">마지막페이지</a></c:if>
+  <c:if test="${pag > 1}">[<a href="guestList?pag=1" class="text-decoration-none text-dark link-primary">첫페이지</a>]</c:if>
+  <c:if test="${curBlock > 0}">[<a href="guestList?pag=${(curBlock-1)*blockSize + 1}" class="text-decoration-none text-dark link-primary">이전블록</a>]</c:if>
+  <c:forEach var="i" begin="${(curBlock*blockSize)+1}" end="${(curBlock*blockSize)+blockSize}" varStatus="st">
+  	<c:if test="${i <= totPage && i == pag}">[<a href="guestList?pag=${i}" class="text-decoration-none text-dark link-primary"><font color="red"><b>${i}</b></font></a>]</c:if>
+  	<c:if test="${i <= totPage && i != pag}">[<a href="guestList?pag=${i}" class="text-decoration-none text-dark link-primary">${i}</a>]</c:if>
+  </c:forEach>
+  <c:if test="${curBlock < lastBlock}">[<a href="guestList?pag=${(curBlock+1)*blockSize + 1}" class="text-decoration-none text-dark link-primary">다음블록</a>]</c:if>
+  <c:if test="${pag < totPage}">[<a href="guestList?pag=${totPage}" class="text-decoration-none text-dark link-primary">마지막페이지</a>]</c:if>
 </div>
 <!-- 블록페이지 끝 -->
+  
 </div>
 <p><br/></p>
 <jsp:include page="/WEB-INF/views/include/footer.jsp" />

@@ -18,4 +18,5 @@ public interface User2Service {
 
 	int setUserUpdate(UserVO vo);
 
+
 }

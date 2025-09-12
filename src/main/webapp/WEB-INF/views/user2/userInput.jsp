@@ -8,13 +8,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <jsp:include page="/WEB-INF/views/include/bs5.jsp" />
   <title>userInput.jsp</title>
+  <style>
+    th {
+      background-color: #eee !important;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/include/nav.jsp" />
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
-<div class="container text-center">
-  <h2>User 등록하기</h2>
+<div class="container">
+  <h2 class="text-center m-3">User 등록하기</h2>
   <form method="post">
   <table class="table table-bordered">
     <tr>

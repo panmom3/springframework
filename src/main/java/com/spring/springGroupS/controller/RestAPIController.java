@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 //@Controller
 @RestController
 @RequestMapping("/restApi")
-public class restAPICosntroller {
+public class RestAPIController {
 
 	// REST Controller을 통한 일반 메세지 처리3(O)
 	@GetMapping("/restApi1/{message}")

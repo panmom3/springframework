@@ -13,5 +13,7 @@ public interface GuestService {
 	int getTotRecCnt();
 
 	int setGuestDelete(int idx);
-	
+
+	int getMemberSearch(String mid, String nickName, String name);
+
 }
