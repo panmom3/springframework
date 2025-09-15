@@ -2,29 +2,26 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:set var="ctp" value="${pageContext.request.contextPath}" />
 <script>
-	function userDeleteCheck() {
-		let ans = confirm("회원 탈퇴하시겠습니까?");
-		if(ans) {
-			ans = confirm("탈퇴하시면 1개월간 같은 아이디로 다시 가입하실수 없습니다.\n그래도 탈퇴 하시겠습니까?");
-			if(ans) {
-				$.ajax({
-					url : '${ctp}/member/userDelete',
-					type : 'post',
-					success : (res) => {
-						if(res != '0') {
-							alert("회원에서 탙퇴 되셨습니다.");
-							location.href = '${ctp}/member/memberLogin';
-						} else {
-							alert("회원 탈퇴 실패~~");
-						}
-					},
-					error : () => alert("전송오류");
-				});
-			}
-		}
-	}
-
-
+  function userDeleteCheck() {
+	  let ans = confirm("회원 탈퇴하시겠습니까?");
+	  if(ans) {
+		  ans = confirm("탈퇴하시면 1개월간 같은 아이디로는 다시 가입하실수 없습니다.\n그래도 탈퇴 하시겠습니까?");
+		  if(ans) {
+			  $.ajax({
+				  url  : '${ctp}/member/userDelete',
+				  type : 'post',
+				  success: (res) => {
+					  if(res != '0') {
+						  alert("회원에서 탈퇴 되셨습니다.");
+						  location.href = '${ctp}/member/memberLogin';
+					  }
+					  else alert("회원 탈퇴 실패~~");
+				  },
+				  error : () => alert("전송오류!")
+			  });
+		  }
+	  }
+  }
 </script>
 
 <!-- Navbar -->
