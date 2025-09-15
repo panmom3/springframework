@@ -10,4 +10,21 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Autowired
 	AdminDAO adminDao;
+
+	@Override
+	public int setMemberLevelChange(int idx, int level) {
+		
+		return adminDao.setMemberLevelChange(idx, level);
+	}
+
+	@Override
+	public int setmemberLevelSelectChange(String idxSelectArray, int levelSelect) {
+		String[] idxSelectArrays = idxSelectArray.split("/");
+		
+		int res = 0;
+		for(String idx : idxSelectArrays) {
+			res = adminDao.setMemberLevelChange(Integer.parseInt(idx), levelSelect);
+		}
+		return res;
+	}
 }
