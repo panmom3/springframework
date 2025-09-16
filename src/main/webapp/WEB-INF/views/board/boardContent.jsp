@@ -20,7 +20,7 @@
     		type : 'post',
     		data : {idx : ${vo.idx}},
     		success:function(res) {
-    			if(res != '0') location.reload();
+    			if(res != 0) location.reload();
     			else alert("이미 좋아요를 클릭하셨습니다.");
     		},
     		error : function() { alert("전송오류!!"); }
@@ -164,6 +164,7 @@
       <th>글쓴이</th>
       <td>${vo.nickName}</td>
       <th>글쓴날짜</th>
+      <%-- <td>${fn:substring(vo.WDate,0,19)}</td> --%>
       <td>${vo.WDate}</td>
     </tr>
     <tr>
@@ -175,11 +176,6 @@
     <tr>
       <th>글제목</th>
       <td colspan="3">${vo.title}
-       <!-- (<a href="javascript:goodCheck()" class="text-decoration-none" title="좋아요">❤️</a> : ${vo.good})
-        /
-        <a href="javascript:goodCheckPlus()" class="text-decoration-none" title="좋아요">👍</a>
-        <a href="javascript:goodCheckMinus()" class="text-decoration-none" title="싫어요">👎</a>
-        -->
        (<a href="javascript:goodCheck()" class="text-decoration-none" title="좋아요">좋아요 :
             <c:if test="${!fn:contains(sContentIdx, 'boardGood'+=vo.idx)}">♥️</c:if>
             <c:if test="${fn:contains(sContentIdx, 'boardGood'+=vo.idx)}"><font color='red'>♥️</font></c:if>
@@ -214,15 +210,15 @@
   <table class="table table-borderless m-0 p-0">
     <tr>
       <td class="m-0 p-0">
-        <c:if test="${!empty nextVo.title}">
-	        👆 <a href="boardContent?idx=${nextVo.idx}&pag=${pag}&pageSize=${pageSize}" class="text-decoration-none">다음글 : ${nextVo.title}</a>
+        <c:if test="${!empty nextVO.title}">
+	        👆 <a href="boardContent?idx=${nextVO.idx}&pag=${pag}&pageSize=${pageSize}" class="text-decoration-none">다음글 : ${nextVO.title}</a>
         </c:if>
       </td>
     </tr>
     <tr>
       <td class="m-0 p-0">
-        <c:if test="${!empty preVo.title}">
-        	👇 <a href="boardContent?idx=${preVo.idx}&pag=${pag}&pageSize=${pageSize}" class="text-decoration-none">이전글 : ${preVo.title}</a>
+        <c:if test="${!empty preVO.title}">
+        	👇 <a href="boardContent?idx=${preVO.idx}&pag=${pag}&pageSize=${pageSize}" class="text-decoration-none">이전글 : ${preVO.title}</a>
         </c:if>
       </td>
     </tr>
