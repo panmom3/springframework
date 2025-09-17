@@ -15,6 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.spring.springGroupS.dao.BoardDAO;
+import com.spring.springGroupS.vo.Board2ReplyVO;
 import com.spring.springGroupS.vo.BoardVO;
 
 @Service
@@ -55,6 +56,7 @@ public class BoardServiceImpl implements BoardService {
 		
 		int position = 33;
 		String nextImg = content.substring(content.indexOf("src=\"/") + position);
+		
 		boolean sw = true;
 		
 		while(sw) {
@@ -169,5 +171,32 @@ public class BoardServiceImpl implements BoardService {
 	private void fileDelete(String origFilePath) {
 		File delFile = new File(origFilePath);
 		if(delFile.exists()) delFile.delete();
+	}
+
+	@Override
+	public List<Board2ReplyVO> getBoardReply(int idx) {
+		
+		return boardDAO.getBoardReply(idx);
+	}
+
+	@Override
+	public Board2ReplyVO getBoardParentReplyCheck(int board2Idx) {
+		return boardDAO.getBoardParentReplyCheck(board2Idx);
+	}
+
+	@Override
+	public int setBoardReplyInput(Board2ReplyVO replyVO) {
+		// TODO Auto-generated method stub
+		return boardDAO.setBoardReplyInput(replyVO);
+	}
+
+	@Override
+	public int setBoardReplyDelete(int idx) {
+		return boardDAO.setBoardReplyDelete(idx);
+	}
+
+	@Override
+	public void setReplyOrderUpdate(int board2Idx, int re_order) {
+		boardDAO.setReplyOrderUpdate(board2Idx, re_order);
 	}
 }

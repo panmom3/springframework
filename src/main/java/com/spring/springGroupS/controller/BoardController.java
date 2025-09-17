@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.springGroupS.common.Pagination;
 import com.spring.springGroupS.service.BoardService;
+import com.spring.springGroupS.vo.Board2ReplyVO;
 import com.spring.springGroupS.vo.BoardVO;
 import com.spring.springGroupS.vo.PageVO;
 
@@ -66,7 +67,7 @@ public class BoardController {
 	// 글 내용 보기(조회수증가:중복방지, '이전글/다음글')
 	@SuppressWarnings("unchecked")
 	@GetMapping("/boardContent")
-	public String boardContentGet(Model model, int idx, HttpSession session,
+	public String boardContentGet(Model model, int idx, HttpSession session, String boardFlag,
 				@RequestParam(name="pag", defaultValue = "1", required = false) int pag,
 				@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize
 			) {
@@ -87,6 +88,7 @@ public class BoardController {
 		model.addAttribute("vo",vo);
 		model.addAttribute("pag",pag);
 		model.addAttribute("pageSize",pageSize);
+		model.addAttribute("boardFlag",boardFlag);
 		
 		// 이전글/다음글 처리
 		BoardVO preVO = boardService.getPreNextSearch(idx, "preVO");
@@ -94,6 +96,10 @@ public class BoardController {
 		
 		model.addAttribute("preVO", preVO);
 		model.addAttribute("nextVO", nextVO);
+		
+		// 댓글(대댓글) 가져오기
+		List<Board2ReplyVO> replyVos = boardService.getBoardReply(idx);
+		model.addAttribute("replyVos", replyVos);
 		
 		return "board/boardContent";
 	}
@@ -146,7 +152,7 @@ public class BoardController {
 		// content내용중에서 조금이라도 수정한 것이 있다면 사진에 대한 처리를 한다.
 		if(!origVO.getContent().equals(vo.getContent())) {
 			// 1. 기존 board폴더에 그림파일이 존재했다면 원본그림파일 삭제처리
-			if(vo.getContent().indexOf("src=\"/") != -1) boardService.imgDelete(origVO.getContent());
+			if(origVO.getContent().indexOf("src=\"/") != -1) boardService.imgDelete(origVO.getContent());
 			// 2.content필드안에는 현재 board폴더로 설정하되어 있기에, board폴더를 ckeditor로 변경처리한다.
 			vo.setContent(vo.getContent().replace("/data/board", "/data/ckeditor"));
 			// 3.board폴더의 그림파일 삭제 완료후(그림파일이 존재시), 입력시 작업과 같은 작업을 수행처리한다.
@@ -165,5 +171,66 @@ public class BoardController {
 //		else return "redirect:/message/boardUpdateNo?idx="+vo.getIdx()+"pag="+pag+"&pageSize="+pageSize;
 		if(res != 0) return "redirect:/message/boardUpdateOk";
 		else return "redirect:/message/boardUpdateNo";
+	}
+	
+	// 부모댓글 입력처리(원본글에 대한 댓글)
+	@ResponseBody
+	@PostMapping("/boardReplyInput")
+	public int boardReplyInputPost(Board2ReplyVO replyVO) {
+		// 부모댓글은 ref는 원본글의 idx, re_step=1, re_order=1, 단, 부모댓글이 아닌 대댓글인경우는 마지막 부모댓글의 re_step+1, re_order+1처리
+		Board2ReplyVO replyParentVO = boardService.getBoardParentReplyCheck(replyVO.getBoard2Idx());
+		replyVO.setRef(replyVO.getBoard2Idx());
+		
+		if(replyParentVO == null) {
+			replyVO.setRe_step(1);
+			replyVO.setRe_order(1);
+		}
+		else {
+			if(replyVO.getReplySw() != 1) {  // 부모댓글창에서는 1이 들어온다.
+				replyVO.setRe_step(replyParentVO.getRe_step()+1); // 대댓글창에서 보낼때 수행(자식)
+			}
+			else {
+				replyVO.setRe_step(1);
+			}
+			replyVO.setRe_order(replyParentVO.getRe_order()+1);
+		}
+		return boardService.setBoardReplyInput(replyVO);
+	}
+	
+	//대댓글 입력처리(부모댓글에 대한 댓글)
+	@ResponseBody
+	@PostMapping("/boardReplyInputOk")
+	public int boardReplyInputOkPost(Board2ReplyVO replyVO) {
+		// 대댓글(답변글)의 re_order는 1:자신의 re_step은 부모re_step+1 시켜주고, 
+		// 2:부모댓글 re_order값보다 큰re_order은 re_order+1시켜주고, 3:자신의 re_order는 부모re_order+1처리한다.
+		System.out.println("replyVO22 : " + replyVO);
+		replyVO.setRe_step(replyVO.getRe_step()+1);	// 1번처리
+		boardService.setReplyOrderUpdate(replyVO.getBoard2Idx(), replyVO.getRe_order());	// 2번처리
+		replyVO.setRe_order(replyVO.getRe_order() + 1);
+		
+		int res = boardService.setBoardReplyInput(replyVO);
+		
+		return res;
+	}
+	
+	//댓글 삭제처리
+	@ResponseBody
+	@PostMapping("/boardReplyDelete")
+	public int boardReplyDeletePost(int idx) {
+		return boardService.setBoardReplyDelete(idx);
+	}
+	
+	// 검색기 처리
+	@GetMapping("/boardSearchList")
+	public String boardSearchListGet(Model model, PageVO pageVO) {
+		pageVO.setSection("board");
+		pageVO = pagination.pagination(pageVO);
+		
+		List<BoardVO> vos = boardService.getBoardList(pageVO.getStartIndexNo(), pageVO.getPageSize(), pageVO.getSearch(), pageVO.getSearchString());
+		
+		model.addAttribute("vos", vos);
+		model.addAttribute("pageVO", pageVO);
+		
+		return "board/boardSearchList";
 	}
 }

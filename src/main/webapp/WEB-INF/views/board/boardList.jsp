@@ -94,7 +94,7 @@
 <br/>
 <!-- 검색기 시작 -->
   <div class="text-center">
-    <form name="searchForm" method="post" action="boardSearchList">
+    <form name="searchForm" method="get" action="boardSearchList">
       <b>검색  : </b>
       <select name="search" id="search">
         <option value="title" selected>글제목</option>
@@ -105,6 +105,7 @@
       <input type="submit" value="검색" class="btn btn-secondary btn-sm"/>
     </form>
   </div>
+
 <!-- 검색기 끝 -->
 
 </div>

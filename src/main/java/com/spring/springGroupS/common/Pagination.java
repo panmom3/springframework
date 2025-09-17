@@ -23,8 +23,8 @@ public class Pagination {
 		
 		int totRecCnt = 0;
 		if(pageVO.getSection().equals("board")) {
-			if(pageVO.getSearch() == null) totRecCnt = boardService.getTotRecCnt("","");
-			else totRecCnt = boardService.getTotRecCnt(pageVO.getSearch(), pageVO.getSearchString());
+			if(pageVO.getSearch() == null) totRecCnt = boardService.getTotRecCnt("","");   // search가 없으면 일반게시판
+			else totRecCnt = boardService.getTotRecCnt(pageVO.getSearch(), pageVO.getSearchString());  //조건에 맞는것만 넘긴다
 		}
 		else if(pageVO.getSection().equals("member")) {
 			totRecCnt = memberService.getTotRecCnt();
@@ -47,10 +47,17 @@ public class Pagination {
 		pageVO.setCurBlock(curBlock);
 		pageVO.setLastBlock(lastBlock);
 		
+		if(pageVO.getSearch() != null) {
+			if(pageVO.getSearch().equals("title")) pageVO.setSearchStr("글제목");
+			else if(pageVO.getSearch().equals("nickName")) pageVO.setSearchStr("닉네임");
+			else if(pageVO.getSearch().equals("content")) pageVO.setSearchStr("글내용");
+		}
+		
 		pageVO.setSearch(pageVO.getSearch());
 		pageVO.setSearchString(pageVO.getSearchString());
 		
 		pageVO.setPart(pageVO.getPart());
+		pageVO.setBoardFlag(pageVO.getBoardFlag());
 		
 		return pageVO;
 	}

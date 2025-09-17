@@ -65,15 +65,17 @@
     	if(ans) location.href = "boardDelete?idx=${vo.idx}&pag=${pag}&pageSize=${pageSize}";
     }
     
-    // 댓글 저장하기
+    // 원본글의 댓글 저장하기(부모댓글)
     function replyCheck() {
     	let content = $("#content").val();
     	if(content.trim() == "") {
     		alert('댓글을 입력하세요');
     		return false;
     	}
+    	// replySw는 원본글의 댓글에서 전송하는 것을 알림
     	let query = {
-    			boardIdx : ${vo.idx},
+    			replySw : 1,
+    			board2Idx : ${vo.idx},
     			mid      : '${sMid}',
     			nickName : '${sNickName}',
     			hostIp   : '${pageContext.request.remoteAddr}',
@@ -85,7 +87,7 @@
     		type : 'post',
     		data : query,
     		success:function(res) {
-    			if(res != '0') {
+    			if(res != 0) {
     				alert('댓글이 입력되었습니다.');
     				location.reload();
     			}
@@ -96,7 +98,7 @@
     }
     
     // 댓글 삭제처리
-    function replyDelete(idx) {
+    function boardReplyDelete(idx) {
     	let ans = confirm("선택한 댓글을 삭제하시겠습니까?");
     	if(!ans) return false;
     	
@@ -105,7 +107,7 @@
     		type : "post",
     		data : {idx : idx},
     		success:function(res) {
-    			if(res != '0') {
+    			if(res != 0) {
     				alert('댓글이 삭제되었습니다.');
     				location.reload();
     			}
@@ -116,11 +118,13 @@
     }
     // 댓글 수정창 모두 닫기(처음 폼이 로드될떄)
     $(function() {
-    	$(".replayInnerContent").hide();
+    	$(".replyInnerContent").hide();
+    	$(".replyCloseBtnCheck").hide();
+
     });
     // 댓글 수정버튼(√) 클릭시 해당 댓글의 수정창 보여주기
     function replyUpdate(idx) {
-    	$(".replayInnerContent").hide();
+    	$(".replyInnerContent").hide();
     	$("#demo"+idx).show();
     }
  		// 댓글 수정창에서 '댓글수정'버튼 클릭시에 수행
@@ -136,7 +140,7 @@
     		type : "post",
     		data : query,
     		success:function(res) {
-    			if(res != '0') {
+    			if(res != 0) {
     				alert('댓글이 수정되었습니다.');
     				location.reload();
     			}
@@ -145,6 +149,55 @@
     		error : function() { alert("전송오류!!"); }
     	});
     }
+ 		
+ 		// 대댓글 입력버튼 클릭시 입력박스 보여주기
+ 		function replyShow(idx) {
+ 			$(".replyBoxContent").hide();
+ 			$("#replyShowBtn"+idx).hide();
+ 			$("#replyCloseBtn"+idx).show();
+ 			$("#replyDemo"+idx).show();
+ 		}
+ 		
+ 		// 대댓글 닫기버튼 클릭시 댓글박스 닫기
+ 		function replyClose(idx) {
+ 			$(".replyBoxContent").hide();
+ 			$("#replyShowBtn"+idx).show();
+ 			$("#replyCloseBtn"+idx).hide();
+ 			$("#replyDemo"+idx).hide();
+ 		}
+ 		
+ 		// 대댓글(부모댓글의 답변글)의 입력처리
+ 		function replyInputOk(idx, re_step, re_order) {
+ 			let content = $("#replyInputContent"+idx).val();
+ 			if(content.trim() == "") {
+ 				alert("답변글을 입력하세요");
+ 				$(".replyInputContent"+idx).focus();
+ 				return false;
+ 			}
+ 			let query = {
+ 					board2Index : ${vo.idx},
+ 					ref         : ${vo.idx},
+ 					re_step     : re_step,
+ 					re_order    : re_order,
+ 					mid         : '${sMid}',
+ 					nickName    : '${sNickName}',
+ 					hostIp      : '${pageContext.request.remoteAddr}',
+ 					content     : content
+ 			}
+ 			$.ajax({
+ 	    		url  : "${ctp}/board/boardReplyInputOk",
+ 	    		type : "post",
+ 	    		data : query,
+ 	    		success:function(res) {
+ 	    			if(res != 0) {
+ 	    				alert('답변글이 입력되었습니다.');
+ 	    				location.reload();
+ 	    			}
+ 	    			else alert("답변글 입력 실패~~");
+ 	    		},
+ 	    		error : function() { alert("전송오류!!"); }
+ 	    	});
+ 		}
   </script>
   <style>
     th {
@@ -229,35 +282,54 @@
   <!-- 댓글 리스트 -->
   <table class="table table-hover text-center">
     <tr>
-      <th>작성자</th>
+      <th class="text-start"> &nbsp;&nbsp;작성자</th>
       <th class="text-start ps-3"> &nbsp;댓글내용</th>
       <th>댓글일자</th>
       <th>댓글IP</th>
+      <th>답글</th>
     </tr>
-    <c:forEach var="replyVo" items="${replyVos}" varStatus="st">
+    <c:forEach var="replyVO" items="${replyVos}" varStatus="st">
       <tr>
         <td class="text-start">
-          ${replyVo.nickName}
-          <c:if test="${sMid == replyVo.mid}">
+        <c:if test="${replyVO.re_step > 1}">
+        	<c:forEach var="i" begin="1" end="${replyVO.re_step}">&nbsp;&nbsp;</c:forEach>└▶
+        </c:if>
+          ${replyVO.nickName}
+          <c:if test="${sMid == replyVO.mid}">
           (
-          <a href="javascript:replyUpdate(${replyVo.idx})" title="댓글수정" class="text-decoration-none">√</a>
-          <a href="javascript:replyDelete(${replyVo.idx})" title="댓글삭제" class="text-decoration-none">x</a>
+          <a href="javascript:replyUpdate(${replyVO.idx})" title="댓글수정" class="text-decoration-none">√</a>
+          <a href="javascript:replyDelete(${replyVO.idx})" title="댓글삭제" class="text-decoration-none">x</a>
           )
           </c:if>
         </td>
-        <td class="text-start">${fn:replace(replyVo.content, newLine, "<br/>")}</td>
-        <td>${replyVo.WDate}</td>
-        <td>${replyVo.hostIp}</td>
+        <td class="text-start">${fn:replace(replyVO.content, newLine, "<br/>")}</td>
+        <td>${fn:substring(replyVO.WDate,0,17)
+        }</td>
+        <td>${replyVO.hostIp}</td>
+        <td>
+        	<a href="javascript:replyShow(${replyVO.idx})" id="replyShowBtn${replyVO.idx}" class="badge bg-success text-decoration">답글</a>
+        	<a href="javascript:replyClose(${replyVO.idx})" id="replyCloseBtn${replyVO.idx}" class="badge bg-warning text-decoration" style="display:none;">닫기</a>
+        </td>
       </tr>
-      <tr id="demo${replyVo.idx}" class="replayInnerContent">
-      	<td colspan="4" class="text-center ps-4 pe-4 pt-1 pb-1">
-      		<form >
-      			<div class="input-group">
-      				<textarea rows="1" name="replyUpdateContent" id="replyUpdateContent${replyVo.idx}" class="form-control">${replyVo.content}</textarea>
-      				<input type="button" value="댓글수정" onclick="replyUpdateOk(${replyVo.idx})" class="btn btn-primary btn-sm"/>
-      			</div>
-      		</form>
-      	</td>
+      <tr id="replyDemo${replyVO.idx}" class="replyBoxContent" style="display:none">
+        <td colspan="5" class="text-center ps-5 pe-4 pt-1 pb-1">
+          <form>
+            <div class="input-group">
+              <textarea rows="2" name="replyInputContent" id="replyInputContent${replyVO.idx}" class="form-control"></textarea>
+              <input type="button" value="댓글입력" onclick="replyInputOk(${replyVO.idx},${replyVO.re_step},${replyVO.re_order})" class="btn btn-success btn-sm"/>
+            </div>
+          </form>
+        </td>
+      </tr>
+      <tr id="demo${replyVO.idx}" class="replyInnerContent">
+        <td colspan="5" class="text-center ps-5 pe-4 pt-1 pb-1">
+          <form>
+            <div class="input-group">
+              <textarea rows="2" name="replyUpdateContent" id="replyUpdateContent${replyVO.idx}" class="form-control">${replyVO.content}</textarea>
+              <input type="button" value="댓글수정" onclick="replyUpdateOk(${replyVO.idx})" class="btn btn-success btn-sm"/>
+            </div>
+          </form>
+        </td>
       </tr>
     </c:forEach>
   </table>

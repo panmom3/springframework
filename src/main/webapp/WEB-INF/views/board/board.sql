@@ -47,6 +47,9 @@ select idx, title from board2 where idx > 9 order by idx limit 1;
 create table board2Reply (
 	idx int not null auto_increment, /*댓글 고유번호*/
 	board2Idx int not null,					/*부모글(원본글)의 고유번호*/
+	ref int not null,              	/*확장(현재는 원본게시글의 고유번호지정처리)*/
+	re_step int not null,					  /*레벨에 따른 들여쓰기(계층) 부모댓글은 1, 대댓글의 경우는 부모 re_step+1처리 */
+	re_order int not null,          /*댓글의 순서(부모댓글은 1, 대댓글은 부모댓글보다 큰 re_order은 모두 re_order+1처리후 자신은 부모re_order+1한다.)*/
 	mid varchar(20) not null,				/*댓글 올린이 아이디*/
 	nickName varchar(20) not null,	/*댓글 올린이 닉네임*/
 	wDate datetime default now(),		/*댓글 올린 날짜*/
@@ -59,7 +62,8 @@ create table board2Reply (
 ); 
 desc board2Reply;
 
-insert into board2Reply values (default, 18, 'aaa1234','강짱',default,'192.168.50.61',"수고");
+insert into board2Reply values (default, 11, 11, 1, 1, 'hkd1234','홍장군', default,'192.168.50.61',"수고하세요");
+insert into board2Reply values (default, 11, 11, 1, 2, 'je1234','지으니', default,'192.168.50.61',"방가방가");
 
 select * from board2Reply order by idx desc;
 -- idx 18번의 댓글개수 구하기
