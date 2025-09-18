@@ -35,4 +35,6 @@ public interface BoardDAO {
 
 	void setReplyOrderUpdate(@Param("board2Idx") int board2Idx, @Param("re_order") int re_order);
 
+	int setBoardDelete(int idx);
+
 }

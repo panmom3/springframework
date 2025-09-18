@@ -39,8 +39,7 @@
 	</select>
 	
 	
-	
-	
+
 	<insert id="setBoardInput">
 	  insert into board2 values (default,#{vo.mid},#{vo.nickName},#{vo.title},#{vo.content},#{vo.hostIp},#{vo.openSw},default,default,default,default);
 	</insert>
@@ -49,12 +48,6 @@
 	  insert into board2Reply values (default,#{replyVO.board2Idx},#{replyVO.ref},#{replyVO.re_step},#{replyVO.re_order},#{replyVO.mid},#{replyVO.nickName},default,#{replyVO.hostIp},#{replyVO.content});
 	</insert>
 
-	
-	
-	
-	
-	
-	
 	
 	<update id="setReadNumPlus">
 	  update board2 set readNum = readNum + 1 where idx = #{idx};
@@ -72,9 +65,7 @@
 	  update board2Reply set re_order = re_order + 1 where board2Idx=#{board2Idx} and re_order > #{re_order};
 	</update>
 	
-	
-	
-	
+
 	<delete id="setBoardDelete">
 	  delete from board2 where idx = #{idx};
 	</delete>

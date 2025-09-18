@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.spring.springGroupS.common.Pagination;
+import com.spring.springGroupS.service.AdminService;
 import com.spring.springGroupS.service.BoardService;
 import com.spring.springGroupS.vo.Board2ReplyVO;
 import com.spring.springGroupS.vo.BoardVO;
+import com.spring.springGroupS.vo.ComplaintVO;
 import com.spring.springGroupS.vo.PageVO;
 
 @Controller
@@ -29,6 +31,9 @@ public class BoardController {
 	
 	@Autowired
 	Pagination pagination;
+	
+	@Autowired
+	AdminService adminService;
 	
 	@GetMapping("/boardList")
 	public String boardListGet(Model model, PageVO pageVO) {
@@ -51,6 +56,12 @@ public class BoardController {
 	// 게시글 DB에 등록하기
 	@PostMapping("/boardInput")
 	public String boardInputPost(BoardVO vo) {
+		// 제몪에 대하여 html태그를 사용할수 없도록 처리....
+		String title = vo.getTitle();
+		title = title.replace("<", "&lt;");
+		title = title.replace(">", "&gt;");
+		vo.setTitle(title);
+		
 		// 1. 만약 content에 이미지를 등록하여 서버 파일시스템에 해당 그림이 저장되어 있다면, 저장된 그림(DB에 저장된 content필드)된 그림만 board폴더에 따로 보관('/data/ckeditor'폴더에서 '/data/board'폴더로 복사)한다.
 		if(vo.getContent().indexOf("src=\"/") != -1) boardService.imgCheck(vo.getContent());
 		
@@ -173,6 +184,27 @@ public class BoardController {
 		else return "redirect:/message/boardUpdateNo";
 	}
 	
+	//게시글 삭제 처리
+	@GetMapping("/boardDelete")
+	public String boardDeleteGet(Model model,int idx,
+				@RequestParam(name="pag", defaultValue = "1", required = false) int pag,
+				@RequestParam(name="pageSize", defaultValue = "10", required = false) int pageSize
+			) {
+		// 게시글에 사진이 존재한다면 서버에 저장된 사진을 먼저 삭제처리한다.
+		BoardVO vo = boardService.getBoardContent(idx);
+		if(vo.getContent().indexOf("src=\"/") != -1) boardService.imgDelete(vo.getContent());
+		
+		// 사진작업처리를 마치고 DB에 저장된 실제 정보레코드를 삭제처리한다.
+		int res = boardService.setBoardDelete(idx);
+		
+		model.addAttribute("idx", idx);
+		model.addAttribute("pag", pag);
+		model.addAttribute("pageSize", pageSize);
+		
+		if(res != 0) return "redirect:/message/boardDeleteOk";
+		else return "redirect:/message/boardDeleteNo";
+	}
+	
 	// 부모댓글 입력처리(원본글에 대한 댓글)
 	@ResponseBody
 	@PostMapping("/boardReplyInput")
@@ -197,13 +229,13 @@ public class BoardController {
 		return boardService.setBoardReplyInput(replyVO);
 	}
 	
-	//대댓글 입력처리(부모댓글에 대한 댓글)
+//대댓글 입력처리(부모댓글에 대한 댓글)
 	@ResponseBody
 	@PostMapping("/boardReplyInputOk")
 	public int boardReplyInputOkPost(Board2ReplyVO replyVO) {
 		// 대댓글(답변글)의 re_order는 1:자신의 re_step은 부모re_step+1 시켜주고, 
 		// 2:부모댓글 re_order값보다 큰re_order은 re_order+1시켜주고, 3:자신의 re_order는 부모re_order+1처리한다.
-		System.out.println("replyVO22 : " + replyVO);
+		System.out.println("replyVO : " + replyVO);
 		replyVO.setRe_step(replyVO.getRe_step()+1);	// 1번처리
 		boardService.setReplyOrderUpdate(replyVO.getBoard2Idx(), replyVO.getRe_order());	// 2번처리
 		replyVO.setRe_order(replyVO.getRe_order() + 1);
@@ -233,4 +265,17 @@ public class BoardController {
 		
 		return "board/boardSearchList";
 	}
+	
+	//신고글 처리하기
+	@ResponseBody
+	@PostMapping("/boardComplaintInput")
+	public int boardComplaintInputPost(ComplaintVO vo) {
+		int res = 0;
+		res = adminService.setboardComplaintInput(vo);
+		if(res != 0) adminService.setBoardTableComplaintOk(vo.getPartIdx());
+		
+		return res;
+	}
+	
+	
 }

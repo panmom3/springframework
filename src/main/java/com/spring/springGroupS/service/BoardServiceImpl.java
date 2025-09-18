@@ -199,4 +199,9 @@ public class BoardServiceImpl implements BoardService {
 	public void setReplyOrderUpdate(int board2Idx, int re_order) {
 		boardDAO.setReplyOrderUpdate(board2Idx, re_order);
 	}
+
+	@Override
+	public int setBoardDelete(int idx) {
+		return boardDAO.setBoardDelete(idx);
+	}
 }
