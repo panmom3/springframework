@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spring.springGroupS.common.Pagination;
 import com.spring.springGroupS.service.AdminService;
 import com.spring.springGroupS.service.MemberService;
-import com.spring.springGroupS.vo.ComplaintVO;
 import com.spring.springGroupS.vo.MemberVO;
 import com.spring.springGroupS.vo.PageVO;
+import com.spring.springGroupS.vo.BoardVO;
+import com.spring.springGroupS.vo.ComplaintVO;
 
 @Controller
 @RequestMapping("/admin")
@@ -43,7 +44,11 @@ public class AdminController {
 	}
 	
 	@GetMapping("/adminContent")
-	public String adminContentGet() {
+	public String adminContentGet(Model model) {
+		model.addAttribute("guestCnt", adminService.getGuestCount());
+		model.addAttribute("boardCnt", adminService.getBoardCount());
+		
+		
 		return "admin/adminContent";
 	}
 	
@@ -75,27 +80,27 @@ public class AdminController {
 		return adminService.setmemberLevelSelectChange(idxSelectArray, levelSelect); 
 	}
 	
-	// 신고리스트 보기
+	// 신고 리스트 보기
 	@GetMapping("/complaint/complaintList")
 	public String complaintListGet(Model model, PageVO pageVO) {
 		pageVO.setSection("complaint");
 		pageVO = pagination.pagination(pageVO);
-		List<ComplaintVO> vos = adminService.getComplaintList(pageVO.getStartIndexNo(), pageVO.getPageSize());
-		
+		List<ComplaintVO> vos = adminService.getComplaintList(pageVO.getStartIndexNo(),pageVO.getPageSize());
 		model.addAttribute("vos", vos);
 		
 		return "admin/complaint/complaintList";
 	}
 	
-	// 신고 상세 내역 보기
+  // 신고 상세 내역 보기
 	@GetMapping("/complaint/complaintContent")
 	public String complaintContentGet(Model model, int partIdx) {
 		ComplaintVO vo = adminService.getComplaintSearch(partIdx);
+		System.out.println("vo : " + vo);
 		model.addAttribute("vo", vo);
 		return "admin/complaint/complaintContent";
 	}
 	
-	// 신고내역자료 '취소/감추기/삭제'
+	//신고내역자료 '취소(S)/감추기(H)/삭제(D)'
 	@ResponseBody
 	@PostMapping("/complaint/complaintProcess")
 	public int complaintProcessPost(ComplaintVO vo) {
@@ -110,13 +115,32 @@ public class AdminController {
 				vo.setComplaintSw("처리중(H)");
 			}
 			else {
-				res = adminService.setComplaintProcess(vo.getPartIdx(), "NO");
+				res =adminService.setComplaintProcess(vo.getPartIdx(), "NO");
 				vo.setComplaintSw("처리중(S)");
 			}
-			if(res != 0) adminService.setComplaintProcessOk(vo.getIdx(), vo.getComplaintSw());
 		}
+		System.out.println("idx: " + vo.getIdx() + ", sw : " + vo.getComplaintSw());
+		if(res != 0) adminService.setComplaintProcessOk(vo.getIdx(), vo.getComplaintSw());
 		
-
 		return res;
+	}
+	
+	//게시판 리스트 보기
+	@GetMapping("/board/adBoardList")
+	public String adBoardListGet(Model model) {
+//		pageVO = pagination.pagination(pageVO);
+		List<BoardVO> vos = adminService.getAdBoardList();
+		model.addAttribute("vos", vos);
+		
+		return "admin/board/adBoardList";
+	}
+	
+	//방명록 리스트 보기
+	@GetMapping("/guest/adGuestList")
+	public String adGuestListGet(Model model) {
+		List<BoardVO> vos = adminService.getAdGuestList();
+		model.addAttribute("vos", vos);
+		
+		return "admin/guest/adGuestList";
 	}
 }

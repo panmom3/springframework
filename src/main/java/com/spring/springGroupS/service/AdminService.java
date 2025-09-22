@@ -2,6 +2,7 @@ package com.spring.springGroupS.service;
 
 import java.util.List;
 
+import com.spring.springGroupS.vo.BoardVO;
 import com.spring.springGroupS.vo.ComplaintVO;
 
 public interface AdminService {
@@ -10,11 +11,11 @@ public interface AdminService {
 
 	int setmemberLevelSelectChange(String idxSelectArray, int levelSelect);
 
-	int setboardComplaintInput(ComplaintVO vo);
+	List<ComplaintVO> getComplaintList(int startIndexNo, int pageSize);
 
 	void setBoardTableComplaintOk(int partIdx);
 
-	List<ComplaintVO> getComplaintList(int startIndexNo, int pageSize);
+	int setBoardComplaintInput(ComplaintVO vo);
 
 	ComplaintVO getComplaintSearch(int partIdx);
 
@@ -24,6 +25,14 @@ public interface AdminService {
 
 	int setComplaintProcessOk(int idx, String complaintSw);
 
+	List<BoardVO> getAdBoardList();
 
+	List<BoardVO> getAdGuestList();
+
+	int getGuestCount();
+
+	int getBoardCount();
+	
+	int getComplaintTotRecCnt(String part);
 
 }

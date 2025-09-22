@@ -7,6 +7,7 @@ show tables;
     S(보이기-신고해제(?)해제시는 board테이블의 complaint필드값을 'NO')
     D(삭제하기-board테이블의 해당글을 삭제처리, complaint테이블에서 progress필드값을 처리중('D')
 */
+
 create table complaint (
 	idx int not null auto_increment,     /* 신고테이블의 고유번호 */
 	part varchar(15) not null,           /* 신고분류(게시판:board, 자료실:pds, 방명록:guest, 포토갤러리:photo~~) */
@@ -20,4 +21,3 @@ create table complaint (
 	foreign key(cpMid) references member(mid)
 );
 desc complaint;
-

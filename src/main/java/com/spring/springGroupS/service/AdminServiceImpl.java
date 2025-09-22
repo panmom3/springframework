@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.springGroupS.dao.AdminDAO;
+import com.spring.springGroupS.vo.BoardVO;
 import com.spring.springGroupS.vo.ComplaintVO;
 
 @Service
@@ -32,9 +33,8 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public int setboardComplaintInput(ComplaintVO vo) {
-		// TODO Auto-generated method stub
-		return adminDao.setboardComplaintInput(vo);
+	public List<ComplaintVO> getComplaintList(int startIndexNo, int pageSize) {
+		return adminDao.getComplaintList(startIndexNo, pageSize);
 	}
 
 	@Override
@@ -43,8 +43,8 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public List<ComplaintVO> getComplaintList(int startIndexNo, int pageSize) {
-		return adminDao.getComplaintList(startIndexNo, pageSize);
+	public int setBoardComplaintInput(ComplaintVO vo) {
+		return adminDao.setBoardComplaintInput(vo);
 	}
 
 	@Override
@@ -67,5 +67,28 @@ public class AdminServiceImpl implements AdminService {
 		return adminDao.setComplaintProcessOk(idx, complaintSw);
 	}
 
+	@Override
+	public List<BoardVO> getAdBoardList() {
+		return adminDao.getAdBoardList();
+	}
 
+	@Override
+	public List<BoardVO> getAdGuestList() {
+		return adminDao.getAdGuestList();
+	}
+
+	@Override
+	public int getGuestCount() {
+		return adminDao.getGuestCount();
+	}
+
+	@Override
+	public int getBoardCount() {
+		return adminDao.getBoardCount();
+	}
+
+	@Override
+	public int getComplaintTotRecCnt(String part) {
+		return adminDao.getComplaintTotRecCnt(part);
+	}
 }

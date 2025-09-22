@@ -4,26 +4,36 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.spring.springGroupS.vo.BoardVO;
 import com.spring.springGroupS.vo.ComplaintVO;
 
 public interface AdminDAO {
 
 	int setMemberLevelChange(@Param("idx") int idx, @Param("level") int level);
 
-	int setboardComplaintInput(@Param("vo") ComplaintVO vo);
+	List<ComplaintVO> getComplaintList(@Param("startIndexNo") int startIndexNo, @Param("pageSize") int pageSize);
 
 	void setBoardTableComplaintOk(@Param("partIdx") int partIdx);
 
-	List<ComplaintVO> getComplaintList(@Param("startIndexNo") int startIndexNo, @Param("pageSize")int pageSize);
+	int setBoardComplaintInput(@Param("vo") ComplaintVO vo);
 
 	ComplaintVO getComplaintSearch(@Param("partIdx") int partIdx);
 
-	int setComplaintDelete(int partIdx, String part);
+	int setComplaintDelete(@Param("partIdx") int partIdx, @Param("part") String part);
 
-	int setComplaintProcess(int partIdx, String flag);
+	int setComplaintProcess(@Param("partIdx")int partIdx, @Param("flag") String flag);
 
-	int setComplaintProcessOk(int idx, String complaintSw);
+	int setComplaintProcessOk(@Param("idx")int idx, @Param("complaintSw")String complaintSw);
 
+	List<BoardVO> getAdBoardList();
+
+	List<BoardVO> getAdGuestList();
+
+	int getGuestCount();
+
+	int getBoardCount();
+
+	int getComplaintTotRecCnt(@Param("part") String part);
 
 
 }

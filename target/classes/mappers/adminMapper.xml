@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.springGroupS.dao.AdminDAO">
+
+	<select id="getGuestCount" resultType="int">
+		select count(*) from guest;
+	</select>
+		<select id="getBoardCount" resultType="int">
+		select count(*) from board2;
+	</select>
 	
 	<select id="getComplaintList" resultType="com.spring.springGroupS.vo.ComplaintVO">
-		select c.partIdx, c.part as part, b.title as title, b.nickName as nickName, c.cpMid as cpMid, c.cpContent as cpContent, date_format(c.cpDate, '%Y-%m-%d %H:%i') as cpDate, c.progress, b.mid as mid, b.content as content from complaint c left join board2 b on c.partIdx=b.idx order by c.idx desc;
+		select c.partIdx, c.part as part, b.title as title, b.nickName as nickName, c.cpMid as cpMid, c.cpContent as cpContent, date_format(c.cpDate, '%Y-%m-%d %H:%i') as cpDate, c.progress, b.mid as mid, b.content as content 
+		from complaint c left join board2 b on c.partIdx=b.idx order by c.idx desc;
 	</select>
 	
 	<select id="getComplaintSearch" resultType="com.spring.springGroupS.vo.ComplaintVO">
-		select c.part as part, b.title as title, b.nickName as nickName, c.cpMid as cpMid, c.cpContent as cpContent, date_format(c.cpDate, '%Y-%m-%d %H:%i') as cpDate, c.progress, b.mid as mid, b.content as content from complaint c left join board2 b on c.partIdx=b.idx where c.partIdx=#{partIdx};
+		select c.part as part, b.title as title, b.nickName as nickName, c.cpMid as cpMid, c.cpContent as cpContent, date_format(c.cpDate, '%Y-%m-%d %H:%i') as cpDate, c.progress, b.mid as mid, b.content as content 
+		from complaint c 
+		left join board2 b on c.partIdx=b.idx   <!-- complaint.partIdx와 board2.idx를 기준으로 LEFT JOIN (complaint에 있는 데이터는 모두 가져오고, board2에 일치하는 데이터가 없으면 NULL로 채움)-->
+		where c.partIdx=#{partIdx};
 	</select>
 	
+	<select id="getAdBoardList" resultType="com.spring.springGroupS.vo.BoardVO">
+		select idx, title, nickName, wDate from board2;
+	</select>
 	
-	<insert id="setboardComplaintInput">
+	<select id="getAdGuestList" resultType="com.spring.springGroupS.vo.GuestVO">
+		select idx, name, email, homePage, content, vDate from guest;
+	</select>
+	
+	<insert id="setBoardComplaintInput">
 		insert into complaint values (default,#{vo.part},#{vo.partIdx},#{vo.cpMid},#{vo.cpContent},default,default);
 	</insert>
 	
@@ -23,6 +41,16 @@
 		update board2 set complaint = 'OK' where idx = #{partIdx};
 	</update>
 	
+	<update id="setComplaintProcess">
+	  update board2 set complaint = #{flag} where idx = #{partIdx};
+	</update>
 	
+	<update id="setComplaintProcessOk">
+	  update complaint set progress = #{complaintSw} where idx = #{idx};
+	</update>
+	
+	<delete id="setComplaintDelete">
+	  delete from ${part} where idx = #{partIdx};
+	</delete>
 
 </mapper>

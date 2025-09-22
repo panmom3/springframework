@@ -199,36 +199,36 @@
 				error : () => alert("전송오류")
 			});
 		}
- 	
- 		// 모달창에서 신고시에 '기타'항목을 선택시에 textarea 필드 보여주기
- 		function etcShow() {
- 			$("#complaintTxt").show();
- 		}
- 		
- 		// 게시글 신고하기 처리
- 		function complaintCheck() {
- 			if(!$("input[type=radio][name=complaint]:checked").is(':checked')) {
- 				alert("신고항목을 선택하세요");
- 				return false;
- 			}
- 			if($("input[type=radio]:checked").val() == '기타' && $("#complaintTxt")) {
- 				alert("기타 사유를 입력해 주세요");
- 				return false;
- 			}
- 			
- 			let cpContent = modalForm.complaint.value;
- 			if(cpContent == '기타') cpContent += '/' + $("#complaintTxt").val();
+		// 모달창에서 신고시에 '기타'항목을 선택시에 textarea 필드 보여주기
+		function etcShow() {
+			$("#complaintTxt").show();
+		}
+		
+		// 게시글 신고하기 처리
+		function complaintCheck() {
+			if(!$("input[type=radio][name=complaint]:checked").is(':checked')) {
+				alert("신고항목을 선택하세요");
+				return false;
+			}
+			if($("input[type=radio]:checked").val() == '기타' && $("#complaintTxt").val() == "") {
+				alert("기타 사유를 입력해 주세요");
+				return false;
+			}
 			
- 			let query = {
- 					part : 'board2',
- 					partIdx : ${vo.idx},
- 					cpMid   : '${sMid}',
- 					cpContent : cpContent
- 			}
- 			$.ajax({
-				url   : 'boardComplaintInput',
-				type  : 'post',
-				data  : query,
+			let cpContent = modalForm.complaint.value;
+			if(cpContent == '기타') cpContent += '/' + $("#complaintTxt").val();
+			
+			let query = {
+					part    : 'board2',
+					partIdx : ${vo.idx},
+					cpMid   : '${sMid}',
+					cpContent : cpContent
+			}
+			
+			$.ajax({
+				url  : 'boardComplaintInput',
+				type : 'post',
+				data : query,
 				success: (res) => {
 					if(res != 0) {
 						alert("신고 되었습니다.");
@@ -237,8 +237,9 @@
 					else alert("신고 실패~");
 				},
 				error : () => alert("전송오류")
- 			});
- 		}
+			});
+		}
+		
   </script>
   <style>
     th {
@@ -290,19 +291,15 @@
         <c:if test="${boardFlag != 'search'}"><input type="button" value="돌아가기" onclick="location.href='boardList?pag=${pag}&pageSize=${pageSize}';" class="btn btn-success" /></c:if>
       </td>
       <td>
-      	<c:if test="${vo.complaint == 'OK'}"><b>현재 이글은 신고중입니다.</b></c:if>
+      	<c:if test="${vo.complaint == 'OK'}"><span class="text-danger fw-bold">현재 이글은 신고중입니다.</span></c:if>
       	<c:if test="${vo.complaint != 'OK' && vo.nickName != sNickName}"><input type="button" value="신고하기" data-bs-toggle="modal" data-bs-target="#myModal" class="btn btn-danger"/></c:if>
       </td>
       <td class="text-end">
         <c:if test="${sMid == vo.mid || sAdmin == 'adminOK'}">
           <c:if test="${sMid == vo.mid}">
-          	<c:if test="${vo.complaint != 'OK'}">
-	        		<input type="button" value="수정" onclick="location.href='boardUpdate?idx=${vo.idx}&pag=${pag}&pageSize=${pageSize}';" class="btn btn-warning" />
-	        	</c:if>
+	        	<input type="button" value="수정" onclick="location.href='boardUpdate?idx=${vo.idx}&pag=${pag}&pageSize=${pageSize}';" class="btn btn-warning" />
 	        </c:if>
-	        <c:if test="${vo.complaint != 'OK'}">
-	        	<input type="button" value="삭제" onclick="deleteCheck()" class="btn btn-danger" />
-	        </c:if>
+	        <input type="button" value="삭제" onclick="deleteCheck()" class="btn btn-danger" />
         </c:if>
       </td>
     </tr>
@@ -399,7 +396,6 @@
     </table>
   </form>
   <!-- 댓글 처리(리스트/입력) 끝 -->
-  
   <!-- 신고하기 모달폼 -->
  	<div class="modal fade" id="myModal">
 	  <div class="modal-dialog modal-dialog-centered">

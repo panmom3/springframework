@@ -27,13 +27,13 @@ import com.spring.springGroupS.vo.PageVO;
 public class BoardController {
 	
 	@Autowired
+	AdminService adminService;
+	
+	@Autowired
 	BoardService boardService;
 	
 	@Autowired
 	Pagination pagination;
-	
-	@Autowired
-	AdminService adminService;
 	
 	@GetMapping("/boardList")
 	public String boardListGet(Model model, PageVO pageVO) {
@@ -56,12 +56,6 @@ public class BoardController {
 	// 게시글 DB에 등록하기
 	@PostMapping("/boardInput")
 	public String boardInputPost(BoardVO vo) {
-		// 제몪에 대하여 html태그를 사용할수 없도록 처리....
-		String title = vo.getTitle();
-		title = title.replace("<", "&lt;");
-		title = title.replace(">", "&gt;");
-		vo.setTitle(title);
-		
 		// 1. 만약 content에 이미지를 등록하여 서버 파일시스템에 해당 그림이 저장되어 있다면, 저장된 그림(DB에 저장된 content필드)된 그림만 board폴더에 따로 보관('/data/ckeditor'폴더에서 '/data/board'폴더로 복사)한다.
 		if(vo.getContent().indexOf("src=\"/") != -1) boardService.imgCheck(vo.getContent());
 		
@@ -271,11 +265,8 @@ public class BoardController {
 	@PostMapping("/boardComplaintInput")
 	public int boardComplaintInputPost(ComplaintVO vo) {
 		int res = 0;
-		res = adminService.setboardComplaintInput(vo);
+		res = adminService.setBoardComplaintInput(vo);
 		if(res != 0) adminService.setBoardTableComplaintOk(vo.getPartIdx());
-		
 		return res;
 	}
-	
-	
 }

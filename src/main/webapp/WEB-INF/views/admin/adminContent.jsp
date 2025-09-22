@@ -20,11 +20,34 @@
 		- 신규회원(level=3) 리스트(건수)
 		- 탈퇴신청회원 리스트(건수)
 	 -->
-	 <p>방명록 새글 : 건</p>
-	 <p>게시판 새글 : 건</p>
-	 <p>신고글 새글 : 건</p>
-	 <p>신규회원 : 건</p>
-	 <p>탙퇴회원 : 건</p>
+	 <table class="table table-bordered table-striped table-hover text-center">
+	 	<colgroup>
+	 		<col style="width:70%">
+	 		<col>
+	 	</colgroup>
+	  <tbody>
+	  	<tr>
+	      <th class="table-primary">방명록 새글</th>
+	      <td>${guestCnt} 건</td>
+	    </tr>
+	    <tr>
+	      <th class="table-primary">게시판 새글</th>
+	      <td>${boardCnt} 건</td>
+	    </tr>
+	    <tr>
+	      <th class="table-primary">신고글 새글</th>
+	      <td>건</td>
+	    </tr>
+	    <tr>
+	      <th class="table-primary">신규회원 새글</th>
+	      <td>건</td>
+	    </tr>
+	    <tr>
+	      <th class="table-primary">탙퇴회원 새글</th>
+	      <td>건</td>
+	    </tr>
+	  </tbody>
+	</table>
 </div>
 <p><br/></p>
 </body>

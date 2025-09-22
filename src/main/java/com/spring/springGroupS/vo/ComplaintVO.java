@@ -6,8 +6,8 @@ import lombok.Data;
 public class ComplaintVO {
 	private int idx;
 	private String part;
-	private int partIdx;
-	private String cpMid;
+	private int partIdx; /* 신고 분류항목 글의 고유번호 */
+	private String cpMid; /* 신고자 아이디 */
 	private String cpContent;
 	private String cpDate;
 	private String progress;
