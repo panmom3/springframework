@@ -30,7 +30,9 @@
 	  </interceptor>
 	  <interceptor>
 	    <mapping path="/board/**"/>
+	    <mapping path="/review/**"/>
 	    <mapping path="/study1/**"/>
+	    <mapping path="/schedule/**"/>
 	    <mapping path="/pds/pdsList"/>
 	    <mapping path="/pds/pdsDownload"/>
 	    <exclude-mapping path="/board/boardList"/>
