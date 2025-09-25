@@ -54,7 +54,7 @@
 	<div>
 		<div class="accordion"><b>일정관리</b></div>
 		<div class="panel">
-			<p><a href="${ctp}/admin/guest/adminGuestList">일정리스트</a></p>
+			<p><a href="${ctp}/admin/schedule/adScheduleList" target="adminContent">일정리스트</a></p>
 			<p><a href="">일정게시</a></p>
 		</div>
 	</div>

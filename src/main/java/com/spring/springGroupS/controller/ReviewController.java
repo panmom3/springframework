@@ -1,5 +1,7 @@
 package com.spring.springGroupS.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,8 +22,11 @@ public class ReviewController {
 	@ResponseBody
 	@PostMapping("/reviewInputOk")
 	public int reviewInputOkPost(ReviewVO vo) {
+		//List<ReviewVO> vos = reviewService.getReviewCheck(vo);
+		
 		return reviewService.setReviewInputOk(vo);
 	}
+	
 	
 	// 원본글에 작성한 댓글 삭제하기
 	@ResponseBody
