@@ -1,7 +1,6 @@
 package com.spring.springGroupS.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.spring.springGroupS.service.Study2Service;
 import com.spring.springGroupS.vo.ChartVO;
 import com.spring.springGroupS.vo.CrimeVO;
+import com.spring.springGroupS.vo.KakaoAddressVO;
 import com.spring.springGroupS.vo.TransactionVO;
 
 @Controller
@@ -150,31 +150,31 @@ public class Study2Controller {
 		}
 	}
 	
-	// 공공데이터 API(전국 강력범죄현황) 
+	// 공공데이터 API(전국 강력범죄현황)
 	@GetMapping("/dataApi/dataApiForm1")
 	public String dataApiForm1Get(Model model) {
 		return "study2/dataApi/dataApiForm1";
 	}
 	
-	//공공데이터 API(강력범죄발생현황 년도별 저장처리) 
+	// 공공데이터 API(강력범죄발생현현황 년도별 저장처리)
 	@ResponseBody
 	@PostMapping("/dataApi/saveCrimeCheck")
 	public void saveCrimeCheckPost(CrimeVO vo) {
 		study2Service.setSaveCrimeCheck(vo);
 	}
 	
-	//공공데이터 API(DB삭제)
+	// 공공데이터 API(강력범죄발생현현황 년도별 삭제처리)
 	@ResponseBody
 	@PostMapping("/dataApi/deleteCrimeCheck")
 	public void deleteCrimeCheckPost(int year) {
 		study2Service.setDeleteCrimeCheck(year);
 	}
 	
-	//공공데이터 API(DB에서 가져와서 화면에 출력)
+	// 공공데이터 API(강력범죄발생현현황 년도별 출력처리)
 	@ResponseBody
 	@PostMapping("/dataApi/dbListCrimeCheck")
-	public List<CrimeVO> getdbListCrimeCheck(int year) {
-	   return study2Service.getdbListCrimeCheck(year); // DB에서 조회한 결과 리턴
+	public List<CrimeVO> dbListCrimeCheckPost(int year) {
+		 return study2Service.setDbListCrimeCheck(year);
 	}
 	
 	// 년도별 + 경찰서 지역별 DB자료 출력처리호출하기
@@ -192,29 +192,97 @@ public class Study2Controller {
 		return "study2/dataApi/dataApiForm1";
 	}
 	
-	// 차트 연습폼 보기
+	
+	// 차트연습폼 보기
 	@GetMapping("/chart/chartForm")
-	public String chartFormGet(Model model, ChartVO vo,
-			@RequestParam(name="part", defaultValue= "barVChart", required = false) String part
-			) {
+	public String chartFormGet(Model model, ChartVO vo, 
+			@RequestParam(name="part", defaultValue = "barVChart", required = false) String part
+		) {
 		model.addAttribute("part", part);
 		model.addAttribute("vo", vo);
-		
-		return "study2/chart/chartForm";
+		return "study2/chart2/chartForm";
 	}
-	
-	//차트연습폼 보기2
-	@RequestMapping(value = "/chart2/chart2Form", method = RequestMethod.GET)
+
+	// 차트연습폼 보기2
+	@RequestMapping(value = "/chart/chart2Form", method = RequestMethod.GET)
 	public String chart2FormGet(Model model,
 			@RequestParam(name="part", defaultValue="barVChart", required=false) String part) {
 		model.addAttribute("part", part);
 		return "study2/chart2/chart2Form";
 	}
 	
-	@RequestMapping(value = "/chart2/googleChart2", method = RequestMethod.POST)
+	@RequestMapping(value = "/chart/googleChart2", method = RequestMethod.POST)
 	public String googleChart2Post(Model model, ChartVO vo) {
 		//System.out.println("vo : " + vo);
 		model.addAttribute("vo", vo);
 		return "study2/chart2/chart2Form";
+	}
+	
+	// Kakaomap 연습
+	@GetMapping("/kakao/kakaomap")
+	public String kakaomapGet() {
+		return "study2/kakao/kakaomap";
+	}
+	
+	// Kakaomap(지도정보획득) - 수정....
+	@GetMapping("/kakao/kakaoEx1")
+	public String kakaoEx1Get() {
+		return "study2/kakao/kakaoEx1";
+	}
+	
+	// Kakaomap(클릭한위치에마커표시)
+	@GetMapping("/kakao/kakaoEx2")
+	public String kakaoEx2Get() {
+		return "study2/kakao/kakaoEx2";
+	}
+	
+	// Kakaomap(클릭한위치에마커표시 DB저정하기)
+	@ResponseBody
+	@PostMapping("/kakao/kakaoEx2")
+	public int kakaoEx2Post(KakaoAddressVO vo) {
+		int res = 0;
+		KakaoAddressVO searchVO = study2Service.getKakaoAddressSearch(vo.getAddress());
+		if(searchVO == null) res = study2Service.setKakaoAddressInput(vo);
+		return res;
+	}
+	
+	// Kakaomap(DB에 저장된 장소 표시/이동하기)
+	@GetMapping("/kakao/kakaoEx3")
+	public String kakaoEx3Get(Model model,
+			@RequestParam(name="address", defaultValue = "", required = false) String address
+			) {
+		
+		KakaoAddressVO vo = new KakaoAddressVO();
+		if(address.equals("")) {
+			vo.setAddress("청주그린컴퓨터");
+			vo.setLatitude(36.635110507473016);
+			vo.setLongitude(127.45959389722837);
+		}
+		else vo = study2Service.getKakaoAddressSearch(address);
+		
+		//KakaoAddressVO searchVO = study2Service.getKakaoAddressSearch(address);
+		
+		List<KakaoAddressVO> addressVos = study2Service.getKakaoAddressList();
+		model.addAttribute("vo", vo);
+		model.addAttribute("addressVos", addressVos);
+		
+		return "study2/kakao/kakaoEx3";
+	}
+	
+	//Kakaomap(검색한 장소를 db에서 삭제하기)
+	@ResponseBody
+	@PostMapping("/kakao/kakaoAddressDelete")
+	public int kakaoAddressDeletePost(String address) {
+		return study2Service.setKakaoAddressDelete(address);
+	}
+	
+	//Kakaomap(kakaoDB에 저장된 장소 표시/이동하기)
+	@GetMapping("/kakao/kakaoEx4")
+	public String kakaoEx4Get(Model model,
+			@RequestParam(name="address", defaultValue = "", required = false) String address
+			) {
+		model.addAttribute("address", address);
+		
+		return "study2/kakao/kakaoEx4";
 	}
 }

@@ -3,6 +3,7 @@ package com.spring.springGroupS.service;
 import java.util.List;
 
 import com.spring.springGroupS.vo.CrimeVO;
+import com.spring.springGroupS.vo.KakaoAddressVO;
 import com.spring.springGroupS.vo.TransactionVO;
 
 public interface Study2Service {
@@ -23,18 +24,24 @@ public interface Study2Service {
 
 	void setTransactionUser2Input(TransactionVO vo);
 
-	String setTransactionUserTotalInput(TransactionVO vo);
+	void setTransactionUserTotalInput(TransactionVO vo);
 
 	void setSaveCrimeCheck(CrimeVO vo);
 
 	void setDeleteCrimeCheck(int year);
 
-	List<CrimeVO> getdbListCrimeCheck(int year);
+	List<CrimeVO> setDbListCrimeCheck(int year);
 
 	List<CrimeVO> getDataApiPoliceForm(int year, String policeZone);
 
 	CrimeVO getCrimeAnalyze(int year, String policeZone);
 
+	KakaoAddressVO getKakaoAddressSearch(String address);
 
+	int setKakaoAddressInput(KakaoAddressVO vo);
+
+	List<KakaoAddressVO> getKakaoAddressList();
+
+	int setKakaoAddressDelete(String address);
 
 }

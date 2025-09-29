@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.spring.springGroupS.vo.CrimeVO;
+import com.spring.springGroupS.vo.KakaoAddressVO;
 import com.spring.springGroupS.vo.TransactionVO;
 
 public interface Study2DAO {
@@ -19,20 +20,28 @@ public interface Study2DAO {
 
 	List<TransactionVO> getTransactionList2();
 
-	void setTransactionUser1Input(@Param("vo")TransactionVO vo);
+	void setTransactionUser1Input(@Param("vo") TransactionVO vo);
 
-	void setTransactionUser2Input(@Param("vo")TransactionVO vo);
+	void setTransactionUser2Input(@Param("vo") TransactionVO vo);
 
-	String setTransactionUserTotalInput(@Param("vo")TransactionVO vo);
+	void setTransactionUserTotalInput(@Param("vo") TransactionVO vo);
 
 	void setSaveCrimeCheck(@Param("vo") CrimeVO vo);
 
 	void setDeleteCrimeCheck(@Param("year") int year);
 
-	List<CrimeVO> getdbListCrimeCheck(@Param("year") int year);
+	List<CrimeVO> setDbListCrimeCheck(@Param("year") int year);
 
-	List<CrimeVO> getDataApiPoliceForm(@Param("year")int year, @Param("policeZone") String policeZone);
+	List<CrimeVO> getDataApiPoliceForm(@Param("year") int year, @Param("policeZone") String policeZone);
 
-	CrimeVO getCrimeAnalyze(@Param("year")int year, @Param("policeZone")String policeZone);
+	CrimeVO getCrimeAnalyze(@Param("year") int year, @Param("policeZone") String policeZone);
+
+	KakaoAddressVO getKakaoAddressSearch(@Param("address") String address);
+
+	int setKakaoAddressInput(@Param("vo") KakaoAddressVO vo);
+
+	List<KakaoAddressVO> getKakaoAddressList();
+
+	int setKakaoAddressDelete(@Param("address") String address);
 
 }

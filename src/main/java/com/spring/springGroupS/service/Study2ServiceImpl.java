@@ -12,6 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.spring.springGroupS.dao.Study2DAO;
 import com.spring.springGroupS.vo.CrimeVO;
+import com.spring.springGroupS.vo.KakaoAddressVO;
 import com.spring.springGroupS.vo.TransactionVO;
 
 @Service
@@ -127,8 +128,8 @@ public class Study2ServiceImpl implements Study2Service {
 	}
 
 	@Override
-	public String setTransactionUserTotalInput(TransactionVO vo) {
-		return study2DAO.setTransactionUserTotalInput(vo);
+	public void setTransactionUserTotalInput(TransactionVO vo) {
+		study2DAO.setTransactionUserTotalInput(vo);
 	}
 
 	@Override
@@ -142,8 +143,8 @@ public class Study2ServiceImpl implements Study2Service {
 	}
 
 	@Override
-	public List<CrimeVO> getdbListCrimeCheck(int year) {
-		return study2DAO.getdbListCrimeCheck(year);
+	public List<CrimeVO> setDbListCrimeCheck(int year) {
+		return study2DAO.setDbListCrimeCheck(year);
 	}
 
 	@Override
@@ -154,6 +155,26 @@ public class Study2ServiceImpl implements Study2Service {
 	@Override
 	public CrimeVO getCrimeAnalyze(int year, String policeZone) {
 		return study2DAO.getCrimeAnalyze(year, policeZone);
+	}
+
+	@Override
+	public KakaoAddressVO getKakaoAddressSearch(String address) {
+		return study2DAO.getKakaoAddressSearch(address);
+	}
+
+	@Override
+	public int setKakaoAddressInput(KakaoAddressVO vo) {
+		return study2DAO.setKakaoAddressInput(vo);
+	}
+
+	@Override
+	public List<KakaoAddressVO> getKakaoAddressList() {
+		return study2DAO.getKakaoAddressList();
+	}
+
+	@Override
+	public int setKakaoAddressDelete(String address) {
+		return study2DAO.setKakaoAddressDelete(address);
 	}
 	
 }
