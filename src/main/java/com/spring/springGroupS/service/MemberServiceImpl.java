@@ -94,5 +94,17 @@ public class MemberServiceImpl implements MemberService {
 		return memberDAO.getMemberLevelCount(level);
 	}
 
+	@Override
+	public MemberVO getMemberNickNameEmailCheck(String nickName, String email) {
+		// TODO Auto-generated method stub
+		return memberDAO.getMemberNickNameEmailCheck(nickName, email);
+	}
+
+	@Override
+	public void setKakaoMemberInput(String mid, String pwd, String nickName, String email) {
+		// TODO Auto-generated method stub
+		memberDAO.setKakaoMemberInput(mid, pwd, nickName, email);
+	}
+
 	
 }

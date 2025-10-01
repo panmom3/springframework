@@ -25,7 +25,7 @@
 </script>
 
 <!-- Navbar -->
-<div class="w3-top">
+<div class="w3-top" style="z-index:5">
   <div class="w3-bar w3-black w3-card">
     <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
     <a href="http://192.168.50.61:9090/springGroupS/" class="w3-bar-item w3-button w3-padding-large">HOME</a>
@@ -61,6 +61,9 @@
 		        <a href="${ctp}/study2/chart/chartForm" class="w3-bar-item w3-button">차트연습1</a>
 		        <a href="${ctp}/study2/chart2/chart2Form" class="w3-bar-item w3-button">차트연습2</a>
 		        <a href="${ctp}/study2/kakao/kakaomap" class="w3-bar-item w3-button">카카오 맵</a>
+		        <a href="${ctp}/study2/weather/weatherForm" class="w3-bar-item w3-button">날씨정보</a>
+		        <a href="${ctp}/study2/qrCode/qrCodeForm" class="w3-bar-item w3-button">QR코드</a>
+		        <a href="${ctp}/study2/thumbnail/thumbnailForm" class="w3-bar-item w3-button">썸네일연습</a>
 		      </div>
 		    </div>
 	    </c:if>
@@ -86,9 +89,17 @@
 	    <a href="${ctp}/member/memberLogin" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Login</a>
 	    <a href="${ctp}/member/memberJoin" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Join</a>
     </c:if>
-    <c:if test="${!empty sLevel}">
+<%--     <c:if test="${!empty sLevel}">
     	<a href="${ctp}/member/memberLogout" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Logout</a>
-    </c:if>
+    </c:if> --%>
+    
+    <div class="w3-dropdown-hover w3-hide-small">
+	      <button onclick="location.href='${ctp}/member/memberLogout'" class="w3-padding-large w3-button" title="More">Logout <i class="fa fa-caret-down"></i></button>     
+	      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+		    	<a href="${ctp}/member/memberLogout" class="w3-bar-item w3-button w3-padding-large w3-hide-small">일반Logout</a>
+		    	<a href="${ctp}/member/kakaoLogout" class="w3-bar-item w3-button w3-padding-large w3-hide-small">KakaoLogout</a>
+	      </div>
+	    </div>
   </div>
 </div>
 
