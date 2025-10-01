@@ -57,7 +57,7 @@
 <jsp:include page="/WEB-INF/views/include/slide2.jsp" />
 <p><br/></p>
 <div class="container">
-  <h2>개인정보를 QR코드로 생성하기</h2>
+  <h2>개인정보를 QR코드로 생성하기~</h2>
   <form name="myform">
     <table class="table table-bordered text-center">
       <tr>
